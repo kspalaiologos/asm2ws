@@ -19,11 +19,11 @@ void disasm_single(FILE * output, struct instruction_t * it) {
         case MOD: fprintf(output, "\tMOD\n"); break;
         case STO: fprintf(output, "\tSTO\n"); break;
         case RCL: fprintf(output, "\tRCL\n"); break;
-        case LBL: fprintf(output, "LBL L%d\n", it->data); break;
-        case CALL: fprintf(output, "\tCALL L%d\n", it->data); break;
-        case JMP: fprintf(output, "\tJMP L%d\n", it->data); break;
-        case BZ: fprintf(output, "\tJZ L%d\n", it->data); break;
-        case BLTZ: fprintf(output, "\tJLTZ L%d\n", it->data); break;
+        case LBL: fprintf(output, "@L%d\n", it->data); break;
+        case CALL: fprintf(output, "\tCALL %%L%d\n", it->data); break;
+        case JMP: fprintf(output, "\tJMP %%L%d\n", it->data); break;
+        case BZ: fprintf(output, "\tJZ %%L%d\n", it->data); break;
+        case BLTZ: fprintf(output, "\tJLTZ %%L%d\n", it->data); break;
         case RET: fprintf(output, "\tRET\n"); break;
         case END: fprintf(output, "\tEND\n"); break;
         case ERR: fprintf(output, "\tERROR\n"); break;
