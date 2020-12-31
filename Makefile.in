@@ -1,0 +1,19 @@
+CC=@CC@
+CFLAGS=@DISTRO@
+OBJ=wsi.o disasm.o run.o parse.o compile.o tcc.o
+
+.PHONY: clean fix-libtcc
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+wsi: $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^ @LIBS@
+
+clean:
+	rm -f *.o *~ config.log config.status
+	rm -rf autom4te.cache/
+
+fix-libtcc:
+	mkdir /usr/lib/x86_64-linux-gnu/tcc/
+	cp /usr/lib/x86_64-linux-gnu/libtcc.a /usr/lib/x86_64-linux-gnu/tcc/libtcc1.a
