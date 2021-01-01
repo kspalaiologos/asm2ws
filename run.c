@@ -91,7 +91,7 @@ int32_t run(struct parse_result_t program, struct state * state, void(*fatal)(ch
                     fatal("division by zero.");
                 vector_push_back(state->stack, lhs % rhs);
                 DONE;
-            case END:
+            case STOP:
                 return cycles;
             case STO:
                 GUARD(state->stack, 2);

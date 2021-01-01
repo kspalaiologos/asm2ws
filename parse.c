@@ -104,7 +104,7 @@ static struct instruction_t parse_flow(FILE * input, void (*fatal)(char * s)) {
         }
         case '\n':
             if(next(input) == '\n')
-                return (struct instruction_t) { END, 0 };
+                return (struct instruction_t) { STOP, 0 };
             else
                 { fatal("bad end, IMP flow"); return (struct instruction_t) { ERR, 0 }; }
         default: fatal("e, IMP flow"); return (struct instruction_t) { ERR, 0 };

@@ -18,7 +18,7 @@ static void warn(char * message) {
 }
 
 int main(int argc, char * argv[]) {
-    int i, dis = 0, count = 0, aot = 0, jit = 0;
+    int i, dis = 0, count = 0, aot = 0, jit = 0, masm = 0;
     for(i = 1; i < argc; i++) {
         char * arg = argv[i];
         if(*arg == '-') {
@@ -36,6 +36,7 @@ int main(int argc, char * argv[]) {
                     #ifdef JIT
                     " -j/--jit: enable the JIT compiler.\n"
                     #endif
+                    " -m/--masm: run the macro assembler.\n"
                     "default operation: run whitespace code.\n"
                 );
                 return 1;
@@ -43,6 +44,8 @@ int main(int argc, char * argv[]) {
                 dis = 1;
             } else if(!strcmp(arg, "--cycles") || arg[1] == 'c') {
                 count = 1;
+            } else if(!strcmp(arg, "--masm") || arg[1] == 'm') {
+                masm = 1;
             } else if(!strcmp(arg, "--aot") || arg[1] == 'a') {
                 aot = 1;
 #ifdef JIT
@@ -71,11 +74,22 @@ int main(int argc, char * argv[]) {
             }
 #endif
 
+            if(masm && (jit || aot || dis || count)) {
+                fprintf(stderr, "wsi: --masm is exclusive with every other f-flag.");
+                return 1;
+            }
+
             FILE * input = fopen(arg, "rb");
             if(!input) {
                 perror("wsi: fopen");
                 return 1;
             }
+            
+            if(masm) {
+                asm_file(input);
+                return 0;
+            }
+
             struct parse_result_t data = parse(input, error, warn);
             fclose(input);
 

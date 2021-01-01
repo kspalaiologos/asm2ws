@@ -127,7 +127,7 @@ char * compile(struct parse_result_t program) {
             case MOD:
                 emit("\tBILOAD; vector_push_back(stack, lhs %% rhs);\n");
                 break;
-            case END:
+            case STOP:
                 emit("\treturn 0;\n");
                 break;
             case STO:

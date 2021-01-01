@@ -12,6 +12,7 @@ void disasm(FILE * output, vector(struct instruction_t) program);
 void disasm_single(FILE * output, struct instruction_t * it);
 int32_t run(struct parse_result_t program, struct state * state, void(*fatal)(char *));
 char * compile(struct parse_result_t program);
+void asm_file(FILE * f);
 
 #ifdef JIT
 

@@ -9,7 +9,7 @@ enum {
     GETC, PUTC, GETN, PUTN,
     PSH, DUP, XCHG, DROP,
     ADD, SUB, MUL, DIV, MOD, STO, RCL,
-    LBL, CALL, JMP, BZ, BLTZ, RET, END,
+    LBL, CALL, JMP, BZ, BLTZ, RET, STOP,
     ERR
 };
 

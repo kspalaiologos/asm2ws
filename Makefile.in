@@ -1,17 +1,24 @@
 CC=@CC@
-CFLAGS=@DISTRO@
-OBJ=wsi.o disasm.o run.o parse.o compile.o tcc.o
+CFLAGS=-Wall -Wextra -Wno-missing-braces @DISTRO@
+OBJ=wsi.o disasm.o run.o parse.o compile.o tcc.o asm.tab.o asm_gen.o lex.yy.o
 
 .PHONY: clean fix-libtcc
-
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 wsi: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ @LIBS@
 
+lex.yy.c: asm.l
+	flex -f asm.l
+
+asm.tab.c asm.tab.h: asm.y
+	bison -d asm.y
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 clean:
 	rm -f *.o *~ config.log config.status
+	rm -f lex.yy.c asm.tab.c asm.tab.h
 	rm -rf autom4te.cache/
 
 fix-libtcc:
