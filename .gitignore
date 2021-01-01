@@ -56,3 +56,7 @@ config.h
 Makefile
 
 wsi
+
+asm.tab.c
+asm.tab.h
+lex.yy.c

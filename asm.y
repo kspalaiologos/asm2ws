@@ -108,6 +108,7 @@ Construct
 | I_DIV { $$ = node(DIV, imm_none()); }
 | I_MOD { $$ = node(MOD, imm_none()); }
 | I_END { $$ = node(END, imm_none()); }
+| NumericalConstant { $$ = node(PSH, $1); }
 ;
 
 NumericalConstant
