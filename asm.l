@@ -47,6 +47,8 @@
 (?i:sto)                    { return I_STO; }
 (?i:rcl)                    { return I_RCL; }
 
+(?i:rep)                    { return I_REP; }
+
 @[A-Za-z_][A-Za-z0-9_]*     { yylval->string = strdup(yytext); return G_LBL; }
 %[A-Za-z_][A-Za-z0-9_]*     { yylval->string = strdup(yytext); return G_REF; }
 
@@ -63,6 +65,7 @@
 (?i:ret)                    { return I_RET; }
 (?i:end)                    { return I_END; }
 
+","                         { return COMMA; }
 ";"(.*)\n                   { ; }
 \'\\?.\'                    { yylval->string = strdup(yytext); return CHAR; }
 \"(\\.|[^\"])*\"            { yylval->string = strdup(yytext); return STRING; }

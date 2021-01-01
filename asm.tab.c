@@ -69,10 +69,15 @@
     #include <stdio.h>
     #include <string.h>
     #include "asm_common.h"
-    
-    #define node(type, param) (struct node_t) { type, param, yyloc.first_line, yyloc.first_column }
 
-#line 76 "asm.tab.c"
+    static struct immediate_t imm_none() { return (struct immediate_t) { .value = 0, IMM_NONE }; }
+    static struct immediate_t imm_val(int32_t x) { return (struct immediate_t) { .value = x, IMM_VALUE }; }
+    static struct immediate_t imm_lbl(char * n) { return (struct immediate_t) { .label = n, IMM_LABEL }; }
+    
+    #define node(type, param) (struct node_t) { type, param, imm_val(0), imm_val(0), yyloc.first_line, yyloc.first_column }
+    #define node2(type, param1, param2) (struct node_t) { type, param1, param2, imm_val(0), yyloc.first_line, yyloc.first_column }
+
+#line 81 "asm.tab.c"
 
 
 
@@ -121,38 +126,40 @@ enum yysymbol_kind_t
   YYSYMBOL_I_MOD = 15,                     /* I_MOD  */
   YYSYMBOL_I_STO = 16,                     /* I_STO  */
   YYSYMBOL_I_RCL = 17,                     /* I_RCL  */
-  YYSYMBOL_G_LBL = 18,                     /* G_LBL  */
-  YYSYMBOL_G_REF = 19,                     /* G_REF  */
-  YYSYMBOL_I_CALL = 20,                    /* I_CALL  */
-  YYSYMBOL_I_JMP = 21,                     /* I_JMP  */
-  YYSYMBOL_I_JZ = 22,                      /* I_JZ  */
-  YYSYMBOL_I_JLTZ = 23,                    /* I_JLTZ  */
-  YYSYMBOL_I_RET = 24,                     /* I_RET  */
-  YYSYMBOL_I_END = 25,                     /* I_END  */
+  YYSYMBOL_I_CALL = 18,                    /* I_CALL  */
+  YYSYMBOL_I_JMP = 19,                     /* I_JMP  */
+  YYSYMBOL_I_JZ = 20,                      /* I_JZ  */
+  YYSYMBOL_I_JLTZ = 21,                    /* I_JLTZ  */
+  YYSYMBOL_I_RET = 22,                     /* I_RET  */
+  YYSYMBOL_I_END = 23,                     /* I_END  */
+  YYSYMBOL_I_REP = 24,                     /* I_REP  */
+  YYSYMBOL_COMMA = 25,                     /* COMMA  */
   YYSYMBOL_LF = 26,                        /* LF  */
   YYSYMBOL_CHAR = 27,                      /* CHAR  */
   YYSYMBOL_STRING = 28,                    /* STRING  */
   YYSYMBOL_NUMBER = 29,                    /* NUMBER  */
-  YYSYMBOL_YYACCEPT = 30,                  /* $accept  */
-  YYSYMBOL_Start = 31,                     /* Start  */
-  YYSYMBOL_MaybeLF = 32,                   /* MaybeLF  */
-  YYSYMBOL_ToplevelScope = 33,             /* ToplevelScope  */
-  YYSYMBOL_Construct = 34,                 /* Construct  */
-  YYSYMBOL_NumericalConstant = 35          /* NumericalConstant  */
+  YYSYMBOL_G_LBL = 30,                     /* G_LBL  */
+  YYSYMBOL_G_REF = 31,                     /* G_REF  */
+  YYSYMBOL_YYACCEPT = 32,                  /* $accept  */
+  YYSYMBOL_Start = 33,                     /* Start  */
+  YYSYMBOL_MaybeLF = 34,                   /* MaybeLF  */
+  YYSYMBOL_ToplevelScope = 35,             /* ToplevelScope  */
+  YYSYMBOL_Construct = 36,                 /* Construct  */
+  YYSYMBOL_NumericalConstant = 37          /* NumericalConstant  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
 
 
 /* Unqualified %code blocks.  */
-#line 27 "asm.y"
+#line 32 "asm.y"
 
     int yylex(YYSTYPE * yylvalp, YYLTYPE * yyllocp, yyscan_t scanner);
     void yyerror(YYLTYPE * yyllocp, yyscan_t unused, const char * msg);
     
     void asm_gen(vector(struct node_t));
 
-#line 156 "asm.tab.c"
+#line 163 "asm.tab.c"
 
 #ifdef short
 # undef short
@@ -460,19 +467,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   13
+#define YYLAST   61
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  30
+#define YYNTOKENS  32
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  18
+#define YYNRULES  51
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  20
+#define YYNSTATES  66
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   284
+#define YYMAXUTOK   286
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -481,10 +488,14 @@ union yyalloc
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    52,    52,    56,    57,    61,    62,    66,    67,    68,
-      69,    70,    71,    72,    73,    74,    75,    79,    83
+       0,    56,    56,    60,    61,    65,    66,    70,    71,    72,
+      73,    74,    75,    76,    77,    78,    79,    80,    81,    82,
+      83,    84,    85,    86,    87,    88,    89,    90,    91,    92,
+      93,    94,    95,    96,    97,    98,    99,   100,   101,   102,
+     103,   104,   105,   106,   107,   108,   109,   110,   114,   118,
+     139,   142
 };
 #endif
 
@@ -502,10 +513,10 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "I_GETC", "I_GETN",
   "I_PUTC", "I_PUTN", "I_PSH", "I_DUP", "I_XCHG", "I_DROP", "I_ADD",
-  "I_SUB", "I_MUL", "I_DIV", "I_MOD", "I_STO", "I_RCL", "G_LBL", "G_REF",
-  "I_CALL", "I_JMP", "I_JZ", "I_JLTZ", "I_RET", "I_END", "LF", "CHAR",
-  "STRING", "NUMBER", "$accept", "Start", "MaybeLF", "ToplevelScope",
-  "Construct", "NumericalConstant", YY_NULLPTR
+  "I_SUB", "I_MUL", "I_DIV", "I_MOD", "I_STO", "I_RCL", "I_CALL", "I_JMP",
+  "I_JZ", "I_JLTZ", "I_RET", "I_END", "I_REP", "COMMA", "LF", "CHAR",
+  "STRING", "NUMBER", "G_LBL", "G_REF", "$accept", "Start", "MaybeLF",
+  "ToplevelScope", "Construct", "NumericalConstant", YY_NULLPTR
 };
 
 static const char *
@@ -522,11 +533,12 @@ static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,   282,   283,   284
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285,   286
 };
 #endif
 
-#define YYPACT_NINF (-19)
+#define YYPACT_NINF (-23)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -540,8 +552,13 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -16,   -19,    12,   -19,   -19,    -3,   -18,   -18,   -18,   -18,
-     -18,   -13,   -19,   -19,   -19,   -19,   -19,   -19,   -19,   -19
+     -22,   -23,     5,   -23,   -23,    15,    30,    30,    30,    30,
+      30,   -23,   -23,   -23,    30,    30,    30,    30,    30,    30,
+      30,    30,    30,    30,    30,   -23,   -23,    41,   -20,   -23,
+     -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,
+     -23,   -23,   -23,    16,   -23,   -23,   -23,   -23,   -23,    30,
+      30,    30,    30,    30,    30,    30,   -23,    30,   -23,   -23,
+     -23,   -23,   -23,   -23,   -23,   -23
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -549,20 +566,25 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     4,     0,     6,     1,     2,    12,    14,    13,    15,
-      16,     0,    17,    18,     7,     9,     8,    10,    11,     5
+       3,     4,     0,     6,     1,     2,    34,    36,    35,    37,
+      38,    39,    40,    41,    42,    43,    44,    45,    46,    26,
+      28,     0,     0,     0,     0,    33,    47,     0,     0,    48,
+      49,    50,    51,     7,     9,     8,    10,    11,    19,    20,
+      21,    22,    23,    25,    27,    29,    30,    31,    32,     0,
+       0,     0,     0,     0,     0,     0,     5,     0,    12,    13,
+      14,    15,    16,    17,    18,    24
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -19,   -19,   -19,   -19,   -19,    -2
+     -23,   -23,   -23,   -23,   -23,    -7
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     3,     5,    11,    14
+      -1,     2,     3,     5,    28,    33
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -570,36 +592,59 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       6,     7,     8,     9,    10,    15,    16,    17,    18,    12,
-       1,    13,     4,    19
+      34,    35,    36,    37,     1,     4,    56,    38,    39,    40,
+      41,    42,    43,    44,    45,    46,    47,    48,     6,     7,
+       8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,    20,    21,    22,    23,    24,    25,    26,    27,
+       0,    57,    58,    59,    60,    61,    62,    63,    64,    49,
+      65,    50,    51,    52,    53,    54,    55,    29,     0,    30,
+      31,    32
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     4,     5,     6,     7,     7,     8,     9,    10,    27,
-      26,    29,     0,    26
+       7,     8,     9,    10,    26,     0,    26,    14,    15,    16,
+      17,    18,    19,    20,    21,    22,    23,    24,     3,     4,
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      -1,    25,    49,    50,    51,    52,    53,    54,    55,     8,
+      57,    10,    11,    12,    13,    14,    15,    27,    -1,    29,
+      30,    31
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    26,    31,    32,     0,    33,     3,     4,     5,     6,
-       7,    34,    27,    29,    35,    35,    35,    35,    35,    26
+       0,    26,    33,    34,     0,    35,     3,     4,     5,     6,
+       7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+      17,    18,    19,    20,    21,    22,    23,    24,    36,    27,
+      29,    30,    31,    37,    37,    37,    37,    37,    37,    37,
+      37,    37,    37,    37,    37,    37,    37,    37,    37,     8,
+      10,    11,    12,    13,    14,    15,    26,    25,    37,    37,
+      37,    37,    37,    37,    37,    37
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    30,    31,    32,    32,    33,    33,    34,    34,    34,
-      34,    34,    34,    34,    34,    34,    34,    35,    35
+       0,    32,    33,    34,    34,    35,    35,    36,    36,    36,
+      36,    36,    36,    36,    36,    36,    36,    36,    36,    36,
+      36,    36,    36,    36,    36,    36,    36,    36,    36,    36,
+      36,    36,    36,    36,    36,    36,    36,    36,    36,    36,
+      36,    36,    36,    36,    36,    36,    36,    36,    37,    37,
+      37,    37
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     2,     0,     1,     3,     0,     2,     2,     2,
-       2,     2,     1,     1,     1,     1,     1,     1,     1
+       2,     2,     3,     3,     3,     3,     3,     3,     3,     2,
+       2,     2,     2,     2,     4,     2,     1,     2,     1,     2,
+       2,     2,     2,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1
 };
 
 
@@ -1443,94 +1488,280 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Start: MaybeLF ToplevelScope  */
-#line 52 "asm.y"
+#line 56 "asm.y"
                         { asm_gen((yyvsp[0].insn)); }
-#line 1449 "asm.tab.c"
+#line 1494 "asm.tab.c"
     break;
 
   case 5: /* ToplevelScope: ToplevelScope Construct LF  */
-#line 61 "asm.y"
+#line 65 "asm.y"
                              { vector_push_back((yyvsp[-2].insn), (yyvsp[-1].ins)); (yyval.insn) = (yyvsp[-2].insn); }
-#line 1455 "asm.tab.c"
+#line 1500 "asm.tab.c"
     break;
 
   case 6: /* ToplevelScope: %empty  */
-#line 62 "asm.y"
+#line 66 "asm.y"
          { (yyval.insn) = NULL; }
-#line 1461 "asm.tab.c"
+#line 1506 "asm.tab.c"
     break;
 
   case 7: /* Construct: I_GETC NumericalConstant  */
-#line 66 "asm.y"
-                           { (yyval.ins) = node(GETC, (yyvsp[0].num)); }
-#line 1467 "asm.tab.c"
+#line 70 "asm.y"
+                           { (yyval.ins) = node(GETC, (yyvsp[0].imm)); }
+#line 1512 "asm.tab.c"
     break;
 
   case 8: /* Construct: I_PUTC NumericalConstant  */
-#line 67 "asm.y"
-                           { (yyval.ins) = node(PUTC, (yyvsp[0].num)); }
-#line 1473 "asm.tab.c"
+#line 71 "asm.y"
+                           { (yyval.ins) = node(PUTC, (yyvsp[0].imm)); }
+#line 1518 "asm.tab.c"
     break;
 
   case 9: /* Construct: I_GETN NumericalConstant  */
-#line 68 "asm.y"
-                           { (yyval.ins) = node(GETN, (yyvsp[0].num)); }
-#line 1479 "asm.tab.c"
+#line 72 "asm.y"
+                           { (yyval.ins) = node(GETN, (yyvsp[0].imm)); }
+#line 1524 "asm.tab.c"
     break;
 
   case 10: /* Construct: I_PUTN NumericalConstant  */
-#line 69 "asm.y"
-                           { (yyval.ins) = node(PUTN, (yyvsp[0].num)); }
-#line 1485 "asm.tab.c"
-    break;
-
-  case 11: /* Construct: I_PSH NumericalConstant  */
-#line 70 "asm.y"
-                          { (yyval.ins) = node(PSH, (yyvsp[0].num)); }
-#line 1491 "asm.tab.c"
-    break;
-
-  case 12: /* Construct: I_GETC  */
-#line 71 "asm.y"
-         { (yyval.ins) = node(GETC, 0); }
-#line 1497 "asm.tab.c"
-    break;
-
-  case 13: /* Construct: I_PUTC  */
-#line 72 "asm.y"
-         { (yyval.ins) = node(PUTC, 0); }
-#line 1503 "asm.tab.c"
-    break;
-
-  case 14: /* Construct: I_GETN  */
 #line 73 "asm.y"
-         { (yyval.ins) = node(GETN, 0); }
-#line 1509 "asm.tab.c"
-    break;
-
-  case 15: /* Construct: I_PUTN  */
-#line 74 "asm.y"
-         { (yyval.ins) = node(PUTN, 0); }
-#line 1515 "asm.tab.c"
-    break;
-
-  case 16: /* Construct: I_PSH  */
-#line 75 "asm.y"
-        { (yyval.ins) = node(PSH, 0); }
-#line 1521 "asm.tab.c"
-    break;
-
-  case 17: /* NumericalConstant: CHAR  */
-#line 79 "asm.y"
-       {
-    (yyval.num) = (yyvsp[0].string)[1] == '\\' ? (yyvsp[0].string)[2] : (yyvsp[0].string)[1];
-    free((yyvsp[0].string));
-}
+                           { (yyval.ins) = node(PUTN, (yyvsp[0].imm)); }
 #line 1530 "asm.tab.c"
     break;
 
-  case 18: /* NumericalConstant: NUMBER  */
+  case 11: /* Construct: I_PSH NumericalConstant  */
+#line 74 "asm.y"
+                          { (yyval.ins) = node(PSH, (yyvsp[0].imm)); }
+#line 1536 "asm.tab.c"
+    break;
+
+  case 12: /* Construct: I_REP I_DUP NumericalConstant  */
+#line 75 "asm.y"
+                                { (yyval.ins) = node(DUP, (yyvsp[0].imm)); }
+#line 1542 "asm.tab.c"
+    break;
+
+  case 13: /* Construct: I_REP I_DROP NumericalConstant  */
+#line 76 "asm.y"
+                                 { (yyval.ins) = node(DROP, (yyvsp[0].imm)); }
+#line 1548 "asm.tab.c"
+    break;
+
+  case 14: /* Construct: I_REP I_ADD NumericalConstant  */
+#line 77 "asm.y"
+                                { (yyval.ins) = node(ADD, (yyvsp[0].imm)); }
+#line 1554 "asm.tab.c"
+    break;
+
+  case 15: /* Construct: I_REP I_SUB NumericalConstant  */
+#line 78 "asm.y"
+                                { (yyval.ins) = node(SUB, (yyvsp[0].imm)); }
+#line 1560 "asm.tab.c"
+    break;
+
+  case 16: /* Construct: I_REP I_MUL NumericalConstant  */
+#line 79 "asm.y"
+                                { (yyval.ins) = node(MUL, (yyvsp[0].imm)); }
+#line 1566 "asm.tab.c"
+    break;
+
+  case 17: /* Construct: I_REP I_DIV NumericalConstant  */
+#line 80 "asm.y"
+                                { (yyval.ins) = node(DIV, (yyvsp[0].imm)); }
+#line 1572 "asm.tab.c"
+    break;
+
+  case 18: /* Construct: I_REP I_MOD NumericalConstant  */
+#line 81 "asm.y"
+                                { (yyval.ins) = node(MOD, (yyvsp[0].imm)); }
+#line 1578 "asm.tab.c"
+    break;
+
+  case 19: /* Construct: I_ADD NumericalConstant  */
+#line 82 "asm.y"
+                          { (yyval.ins) = node(ADD, (yyvsp[0].imm)); }
+#line 1584 "asm.tab.c"
+    break;
+
+  case 20: /* Construct: I_SUB NumericalConstant  */
 #line 83 "asm.y"
+                          { (yyval.ins) = node(SUB, (yyvsp[0].imm)); }
+#line 1590 "asm.tab.c"
+    break;
+
+  case 21: /* Construct: I_MUL NumericalConstant  */
+#line 84 "asm.y"
+                          { (yyval.ins) = node(MUL, (yyvsp[0].imm)); }
+#line 1596 "asm.tab.c"
+    break;
+
+  case 22: /* Construct: I_DIV NumericalConstant  */
+#line 85 "asm.y"
+                          { (yyval.ins) = node(DIV, (yyvsp[0].imm)); }
+#line 1602 "asm.tab.c"
+    break;
+
+  case 23: /* Construct: I_MOD NumericalConstant  */
+#line 86 "asm.y"
+                          { (yyval.ins) = node(MOD, (yyvsp[0].imm)); }
+#line 1608 "asm.tab.c"
+    break;
+
+  case 24: /* Construct: I_STO NumericalConstant COMMA NumericalConstant  */
+#line 87 "asm.y"
+                                                  { (yyval.ins) = node2(STO, (yyvsp[-2].imm), (yyvsp[0].imm)); }
+#line 1614 "asm.tab.c"
+    break;
+
+  case 25: /* Construct: I_STO NumericalConstant  */
+#line 88 "asm.y"
+                          { (yyval.ins) = node(STO, (yyvsp[0].imm)); }
+#line 1620 "asm.tab.c"
+    break;
+
+  case 26: /* Construct: I_STO  */
+#line 89 "asm.y"
+        { (yyval.ins) = node(STO, imm_none()); }
+#line 1626 "asm.tab.c"
+    break;
+
+  case 27: /* Construct: I_RCL NumericalConstant  */
+#line 90 "asm.y"
+                          { (yyval.ins) = node(RCL, (yyvsp[0].imm)); }
+#line 1632 "asm.tab.c"
+    break;
+
+  case 28: /* Construct: I_RCL  */
+#line 91 "asm.y"
+        { (yyval.ins) = node(RCL, imm_none()); }
+#line 1638 "asm.tab.c"
+    break;
+
+  case 29: /* Construct: I_CALL NumericalConstant  */
+#line 92 "asm.y"
+                           { (yyval.ins) = node(CALL, (yyvsp[0].imm)); }
+#line 1644 "asm.tab.c"
+    break;
+
+  case 30: /* Construct: I_JMP NumericalConstant  */
+#line 93 "asm.y"
+                          { (yyval.ins) = node(JMP, (yyvsp[0].imm)); }
+#line 1650 "asm.tab.c"
+    break;
+
+  case 31: /* Construct: I_JZ NumericalConstant  */
+#line 94 "asm.y"
+                         { (yyval.ins) = node(BZ, (yyvsp[0].imm)); }
+#line 1656 "asm.tab.c"
+    break;
+
+  case 32: /* Construct: I_JLTZ NumericalConstant  */
+#line 95 "asm.y"
+                           { (yyval.ins) = node(BLTZ, (yyvsp[0].imm)); }
+#line 1662 "asm.tab.c"
+    break;
+
+  case 33: /* Construct: I_RET  */
+#line 96 "asm.y"
+        { (yyval.ins) = node(RET, imm_none()); }
+#line 1668 "asm.tab.c"
+    break;
+
+  case 34: /* Construct: I_GETC  */
+#line 97 "asm.y"
+         { (yyval.ins) = node(GETC, imm_none()); }
+#line 1674 "asm.tab.c"
+    break;
+
+  case 35: /* Construct: I_PUTC  */
+#line 98 "asm.y"
+         { (yyval.ins) = node(PUTC, imm_none()); }
+#line 1680 "asm.tab.c"
+    break;
+
+  case 36: /* Construct: I_GETN  */
+#line 99 "asm.y"
+         { (yyval.ins) = node(GETN, imm_none()); }
+#line 1686 "asm.tab.c"
+    break;
+
+  case 37: /* Construct: I_PUTN  */
+#line 100 "asm.y"
+         { (yyval.ins) = node(PUTN, imm_none()); }
+#line 1692 "asm.tab.c"
+    break;
+
+  case 38: /* Construct: I_PSH  */
+#line 101 "asm.y"
+        { (yyval.ins) = node(PSH, imm_none()); }
+#line 1698 "asm.tab.c"
+    break;
+
+  case 39: /* Construct: I_DUP  */
+#line 102 "asm.y"
+        { (yyval.ins) = node(DUP, imm_none()); }
+#line 1704 "asm.tab.c"
+    break;
+
+  case 40: /* Construct: I_XCHG  */
+#line 103 "asm.y"
+         { (yyval.ins) = node(XCHG, imm_none()); }
+#line 1710 "asm.tab.c"
+    break;
+
+  case 41: /* Construct: I_DROP  */
+#line 104 "asm.y"
+         { (yyval.ins) = node(DROP, imm_none()); }
+#line 1716 "asm.tab.c"
+    break;
+
+  case 42: /* Construct: I_ADD  */
+#line 105 "asm.y"
+        { (yyval.ins) = node(ADD, imm_none()); }
+#line 1722 "asm.tab.c"
+    break;
+
+  case 43: /* Construct: I_SUB  */
+#line 106 "asm.y"
+        { (yyval.ins) = node(SUB, imm_none()); }
+#line 1728 "asm.tab.c"
+    break;
+
+  case 44: /* Construct: I_MUL  */
+#line 107 "asm.y"
+        { (yyval.ins) = node(MUL, imm_none()); }
+#line 1734 "asm.tab.c"
+    break;
+
+  case 45: /* Construct: I_DIV  */
+#line 108 "asm.y"
+        { (yyval.ins) = node(DIV, imm_none()); }
+#line 1740 "asm.tab.c"
+    break;
+
+  case 46: /* Construct: I_MOD  */
+#line 109 "asm.y"
+        { (yyval.ins) = node(MOD, imm_none()); }
+#line 1746 "asm.tab.c"
+    break;
+
+  case 47: /* Construct: I_END  */
+#line 110 "asm.y"
+        { (yyval.ins) = node(END, imm_none()); }
+#line 1752 "asm.tab.c"
+    break;
+
+  case 48: /* NumericalConstant: CHAR  */
+#line 114 "asm.y"
+       {
+    (yyval.imm) = imm_val((yyvsp[0].string)[1] == '\\' ? (yyvsp[0].string)[2] : (yyvsp[0].string)[1]);
+    free((yyvsp[0].string));
+}
+#line 1761 "asm.tab.c"
+    break;
+
+  case 49: /* NumericalConstant: NUMBER  */
+#line 118 "asm.y"
          {
     int32_t sign = 1, ret, base = 10;
     
@@ -1549,15 +1780,30 @@ yyreduce:
     if(sign == -1)
         (yyvsp[0].string)--;
     
-    (yyval.num) = ret * sign;
-
+    (yyval.imm) = imm_val(ret * sign);
     free((yyvsp[0].string));
 }
-#line 1557 "asm.tab.c"
+#line 1787 "asm.tab.c"
+    break;
+
+  case 50: /* NumericalConstant: G_LBL  */
+#line 139 "asm.y"
+        {
+    (yyval.imm) = imm_lbl(++(yyvsp[0].string));
+}
+#line 1795 "asm.tab.c"
+    break;
+
+  case 51: /* NumericalConstant: G_REF  */
+#line 142 "asm.y"
+        {
+    (yyval.imm) = imm_lbl(++(yyvsp[0].string));
+}
+#line 1803 "asm.tab.c"
     break;
 
 
-#line 1561 "asm.tab.c"
+#line 1807 "asm.tab.c"
 
       default: break;
     }
@@ -1787,7 +2033,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 107 "asm.y"
+#line 147 "asm.y"
 
 
 void yyerror(YYLTYPE * yyllocp, yyscan_t unused, const char * msg) {

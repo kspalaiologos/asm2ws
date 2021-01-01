@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 16 "asm.y"
+#line 21 "asm.y"
 
     typedef void * yyscan_t;
 
@@ -75,18 +75,20 @@ extern int yydebug;
     I_MOD = 15,                    /* I_MOD  */
     I_STO = 16,                    /* I_STO  */
     I_RCL = 17,                    /* I_RCL  */
-    G_LBL = 18,                    /* G_LBL  */
-    G_REF = 19,                    /* G_REF  */
-    I_CALL = 20,                   /* I_CALL  */
-    I_JMP = 21,                    /* I_JMP  */
-    I_JZ = 22,                     /* I_JZ  */
-    I_JLTZ = 23,                   /* I_JLTZ  */
-    I_RET = 24,                    /* I_RET  */
-    I_END = 25,                    /* I_END  */
+    I_CALL = 18,                   /* I_CALL  */
+    I_JMP = 19,                    /* I_JMP  */
+    I_JZ = 20,                     /* I_JZ  */
+    I_JLTZ = 21,                   /* I_JLTZ  */
+    I_RET = 22,                    /* I_RET  */
+    I_END = 23,                    /* I_END  */
+    I_REP = 24,                    /* I_REP  */
+    COMMA = 25,                    /* COMMA  */
     LF = 26,                       /* LF  */
     CHAR = 27,                     /* CHAR  */
     STRING = 28,                   /* STRING  */
-    NUMBER = 29                    /* NUMBER  */
+    NUMBER = 29,                   /* NUMBER  */
+    G_LBL = 30,                    /* G_LBL  */
+    G_REF = 31                     /* G_REF  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -95,14 +97,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "asm.y"
+#line 25 "asm.y"
 
     char * string;
     struct node_t ins;
     vector(struct node_t) insn;
-    int32_t num;
+    struct immediate_t imm;
 
-#line 106 "asm.tab.h"
+#line 108 "asm.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
