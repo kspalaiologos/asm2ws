@@ -55,6 +55,7 @@ AC_TYPE_UINT8_T
 AC_ARG_ENABLE([jit],
     AS_HELP_STRING([--enable-jit], [enable the TinyCC-based JIT compiler]), [
         AC_DEFINE([JIT], [], [enable the TinyCC-based JIT compiler])
+        AC_SUBST([TEST_JIT], ["1"])
 ])
 
 AC_ARG_WITH([target],

@@ -39,6 +39,7 @@ void push_label(struct label_state_t * ctx, char * name, int32_t * id) {
 
     struct _label_t instance;
     instance.declared = 1;
+    instance.references = NULL;
     vector_push_back(instance.references, id);
     instance.name = name + 1;
 
@@ -55,6 +56,7 @@ void pop_label(struct label_state_t * ctx, char * name, int32_t * id) {
 
     struct _label_t instance;
     instance.declared = 0;
+    instance.references = NULL;
     vector_push_back(instance.references, id);
     instance.name = name + 1;
 

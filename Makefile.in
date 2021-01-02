@@ -2,7 +2,7 @@ CC=@CC@
 CFLAGS=-Wall -Wextra -Wno-missing-braces @DISTRO@
 OBJ=wsi.o disasm.o run.o parse.o compile.o tcc.o asm.tab.o asm_gen.o lex.yy.o
 
-.PHONY: clean fix-libtcc cloc
+.PHONY: clean fix-libtcc cloc test
 
 wsi: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ @LIBS@
@@ -12,6 +12,18 @@ lex.yy.c: asm.l
 
 asm.tab.c asm.tab.h: asm.y
 	bison -d asm.y
+
+test: wsi
+ifeq (@TEST_JIT@,1)
+	./test_single.sh -j cellsize.ws 8b147477cb4b551dfbbbe4443cc4c2c8
+	./test_single.sh -j count.ws 3b0332e02daabf31651a5a0d81ba830a
+	echo 8 | ./test_single.sh -j fact.ws d1949440d4e507dfa54f2d17a760cde8
+	./test_single.sh -j nerd.ws 33635b4760a38088a82c0cc72d7de0d2
+endif
+	./test_single.sh "" cellsize.ws 8b147477cb4b551dfbbbe4443cc4c2c8
+	./test_single.sh "" count.ws 3b0332e02daabf31651a5a0d81ba830a
+	echo 8 | ./test_single.sh "" fact.ws d1949440d4e507dfa54f2d17a760cde8
+	./test_single.sh "" nerd.ws 33635b4760a38088a82c0cc72d7de0d2
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
