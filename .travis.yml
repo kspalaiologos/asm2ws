@@ -4,15 +4,19 @@ matrix:
   sudo: true
   include:
     - language: c
+      dist: focal
       script:
         - ./configure --with-target=debug && sudo make wsi
     - language: c
+      dist: focal
       script:
         - ./configure --with-target=release && sudo make wsi
     - language: c
+      dist: focal
       script:
         - ./configure --with-target=release --enable-jit && sudo make wsi
     - language: c
+      dist: focal
       script:
         - ./configure --with-target=coverage --enable-jit && sudo make wsi test
       after_success:
