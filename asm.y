@@ -14,8 +14,8 @@
     static struct immediate_t imm_val(int32_t x) { return (struct immediate_t) { .value = x, IMM_VALUE }; }
     static struct immediate_t imm_lbl(char * n) { return (struct immediate_t) { .label = n, IMM_LABEL }; }
     
-    #define node(type, param) (struct node_t) { type, param, imm_val(0), imm_val(0), yyloc.first_line, yyloc.first_column }
-    #define node2(type, param1, param2) (struct node_t) { type, param1, param2, imm_val(0), yyloc.first_line, yyloc.first_column }
+    #define node(type, param) (struct node_t) { type, param, imm_none(), imm_none(), yyloc.first_line, yyloc.first_column }
+    #define node2(type, param1, param2) (struct node_t) { type, param1, param2, imm_none(), yyloc.first_line, yyloc.first_column }
 }
 
 %code requires {
@@ -32,8 +32,6 @@
 %code {
     int yylex(YYSTYPE * yylvalp, YYLTYPE * yyllocp, yyscan_t scanner);
     void yyerror(YYLTYPE * yyllocp, yyscan_t unused, const char * msg);
-    
-    void asm_gen(vector(struct node_t));
 }
 
 %token END 0 "end of file"
@@ -53,7 +51,7 @@
 %start Start
 %%
 Start
-: MaybeLF ToplevelScope { asm_gen($2); }
+: MaybeLF ToplevelScope { asm_gen(stdout, $2); }
 ;
 
 MaybeLF
@@ -74,11 +72,11 @@ Construct
 | I_PSH NumericalConstant { $$ = node(PSH, $2); }
 | I_REP I_DUP NumericalConstant { $$ = node(DUP, $3); }
 | I_REP I_DROP NumericalConstant { $$ = node(DROP, $3); }
-| I_REP I_ADD NumericalConstant { $$ = node(ADD, $3); }
-| I_REP I_SUB NumericalConstant { $$ = node(SUB, $3); }
-| I_REP I_MUL NumericalConstant { $$ = node(MUL, $3); }
-| I_REP I_DIV NumericalConstant { $$ = node(DIV, $3); }
-| I_REP I_MOD NumericalConstant { $$ = node(MOD, $3); }
+| I_REP I_ADD NumericalConstant { $$ = node2(ADD, $3, imm_val(1)); }
+| I_REP I_SUB NumericalConstant { $$ = node2(SUB, $3, imm_val(1)); }
+| I_REP I_MUL NumericalConstant { $$ = node2(MUL, $3, imm_val(1)); }
+| I_REP I_DIV NumericalConstant { $$ = node2(DIV, $3, imm_val(1)); }
+| I_REP I_MOD NumericalConstant { $$ = node2(MOD, $3, imm_val(1)); }
 | I_ADD NumericalConstant { $$ = node(ADD, $2); }
 | I_SUB NumericalConstant { $$ = node(SUB, $2); }
 | I_MUL NumericalConstant { $$ = node(MUL, $2); }
@@ -107,7 +105,8 @@ Construct
 | I_MUL { $$ = node(MUL, imm_none()); }
 | I_DIV { $$ = node(DIV, imm_none()); }
 | I_MOD { $$ = node(MOD, imm_none()); }
-| I_END { $$ = node(END, imm_none()); }
+| I_END { $$ = node(STOP, imm_none()); }
+| G_LBL { $$ = node(LBL, imm_lbl($1)); }
 | NumericalConstant { $$ = node(PSH, $1); }
 ;
 
@@ -137,11 +136,8 @@ NumericalConstant
     $$ = imm_val(ret * sign);
     free($1);
 }
-| G_LBL {
-    $$ = imm_lbl(++$1);
-}
 | G_REF {
-    $$ = imm_lbl(++$1);
+    $$ = imm_lbl($1);
 }
 ;
 

@@ -2,6 +2,7 @@
 #ifndef _ASM_COMMON_H
 #define _ASM_COMMON_H
 
+#include <stdio.h>
 #include "common.h"
 
 enum { IMM_LABEL, IMM_VALUE, IMM_NONE };
@@ -21,6 +22,6 @@ struct node_t {
     uint32_t line, column;
 };
 
-void asm_gen(vector(struct node_t));
+void asm_gen(FILE *, vector(struct node_t));
 
 #endif
