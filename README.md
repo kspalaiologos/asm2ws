@@ -7,8 +7,8 @@
 
 asm2ws is a whitespace omnitool - a single binary capable of everything.
 
- * interpret whitespace programs
- * compile whitespace programs just-in-time, or output well-formatted corresponding C code
- * disassemble whitespace programs
- * assemble whitespace programs with an optimizing macro assembler
- * recompile and optimize existing programs
+*  interpret whitespace programs
+*  compile whitespace programs just-in-time, or output well-formatted corresponding C code
+*  disassemble whitespace programs
+*  assemble whitespace programs with an optimizing macro assembler
+*  recompile and optimize existing programs
