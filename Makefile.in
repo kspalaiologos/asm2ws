@@ -40,7 +40,7 @@ endif
 clean:
 	rm -f *.o *~ config.log config.status
 	rm -f lex.yy.c asm.tab.c asm.tab.h
-	rm -f tests/*.asm.ws
+	rm -f tests/*.asm.ws tests/*.ws.asm
 	rm -rf autom4te.cache/
 
 cloc: clean
