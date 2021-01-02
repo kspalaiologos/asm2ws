@@ -70,7 +70,7 @@ int comparator(const void * a, const void * b) {
 
 void dump_labels(struct label_state_t * ctx) {
     vector_foreach(struct _label_t, it, ctx->labels) {
-        fprintf(stderr, "%s - present: %d, refs: %ld\n", it->name, it->declared, vector_size(it->references));
+        fprintf(stderr, "%s - present: %d, refs: %lu\n", it->name, it->declared, vector_size(it->references));
     }
 }
 
@@ -268,7 +268,7 @@ void asm_gen(FILE * output, vector(struct node_t) data) {
                     } else if(it->data1.type != IMM_NONE) {
                         // PSH N / DIV
                         if(it->data1.value == 0)
-                            fprintf(stderr, "warn: %d:%d: division by zero.", it->line, it->column);
+                            fprintf(stderr, "warn: %u:%u: division by zero.", it->line, it->column);
                         S;S;numeral(output, it->data1.value);
                         T;S;T;S;
                     } else {
@@ -288,7 +288,7 @@ void asm_gen(FILE * output, vector(struct node_t) data) {
                     } else if(it->data1.type != IMM_NONE) {
                         // PSH N / MOD
                         if(it->data1.value == 0)
-                            fprintf(stderr, "warn: %d:%d: division by zero.", it->line, it->column);
+                            fprintf(stderr, "warn: %u:%u: division by zero.", it->line, it->column);
                         S;S;numeral(output, it->data1.value);
                         T;S;T;T;
                     } else {
