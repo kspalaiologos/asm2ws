@@ -14,9 +14,11 @@ asm.tab.c asm.tab.h: asm.y
 	bison -d asm.y
 
 test: wsi
+	echo "8\n4\n" | ./test_asm.sh divc.asm c81e728d9d4c2f636f067f89cc14862c
 	echo "2\n5\n" | ./test_asm.sh mmltz.asm 50585be4e3159a71c874c590d2ba12ec
 ifeq (@TEST_JIT@,1)
 	echo "2\n5\n" | ./test_single.sh -j mmltz.asm.ws 50585be4e3159a71c874c590d2ba12ec
+	echo "8\n4\n" | ./test_single.sh -j divc.asm.ws c81e728d9d4c2f636f067f89cc14862c
 	./test_single.sh -j cellsize.ws 8b147477cb4b551dfbbbe4443cc4c2c8
 	./test_single.sh -j count.ws 3b0332e02daabf31651a5a0d81ba830a
 	echo 8 | ./test_single.sh -j fact.ws d1949440d4e507dfa54f2d17a760cde8
@@ -27,7 +29,6 @@ endif
 	echo 8 | ./test_single.sh "" fact.ws d1949440d4e507dfa54f2d17a760cde8
 	./test_single.sh "" nerd.ws 33635b4760a38088a82c0cc72d7de0d2
 	./test_single.sh "" spec_zero.ws cfcd208495d565ef66e7dff9f98764da
-	echo "8\n4\n" | ./test_asm.sh divc.asm c81e728d9d4c2f636f067f89cc14862c
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
