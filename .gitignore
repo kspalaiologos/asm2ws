@@ -68,3 +68,4 @@ config.status
 autom4te.cache/
 
 tests/*.asm.ws
+tests/*.ws.asm
