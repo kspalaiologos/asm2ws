@@ -41,6 +41,9 @@ cloc: clean
 # of them. if you're a maintainer of ubuntu, debian, or tcc: if you don't
 # patch this, I won't remove this ugly hack.
 fix-libtcc:
+	# hack debian
 	-mkdir /usr/lib/x86_64-linux-gnu/tcc/
 	-cp /usr/lib/x86_64-linux-gnu/libtcc.a /usr/lib/x86_64-linux-gnu/tcc/libtcc1.a
+	# hack ubuntu
 	-cp /usr/lib/x86_64-linux-gnu/tcc/libtcc1.a /usr/local/lib/tcc/
+	# hack the planet
