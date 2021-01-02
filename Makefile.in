@@ -37,6 +37,10 @@ clean:
 cloc: clean
 	cloc --exclude-list-file=.clocignore .
 
+# there are many possible fixes to that, so we'll just try applying every
+# of them. if you're a maintainer of ubuntu, debian, or tcc: if you don't
+# patch this, I won't remove this ugly hack.
 fix-libtcc:
-	mkdir /usr/lib/x86_64-linux-gnu/tcc/
-	cp /usr/lib/x86_64-linux-gnu/libtcc.a /usr/lib/x86_64-linux-gnu/tcc/libtcc1.a
+	-mkdir /usr/lib/x86_64-linux-gnu/tcc/
+	-cp /usr/lib/x86_64-linux-gnu/libtcc.a /usr/lib/x86_64-linux-gnu/tcc/libtcc1.a
+	-cp /usr/lib/x86_64-linux-gnu/tcc/libtcc1.a /usr/local/lib/tcc/
