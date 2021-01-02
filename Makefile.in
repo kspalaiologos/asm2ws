@@ -24,6 +24,7 @@ endif
 	./test_single.sh "" count.ws 3b0332e02daabf31651a5a0d81ba830a
 	echo 8 | ./test_single.sh "" fact.ws d1949440d4e507dfa54f2d17a760cde8
 	./test_single.sh "" nerd.ws 33635b4760a38088a82c0cc72d7de0d2
+	./test_single.sh "" spec_zero.ws cfcd208495d565ef66e7dff9f98764da
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
