@@ -18,8 +18,8 @@ test: wsi
 	echo "2\n5\n" | ./test_asm.sh mmltz.asm 50585be4e3159a71c874c590d2ba12ec
 	./wsi -d tests/hanoi.ws > tests/hanoi.ws.asm
 	./wsi -m tests/hanoi.ws.asm > tests/hanoi.ws.asm.ws
-	echo "5\n" | ./test_single.sh hanoi.ws 888e3997776c0eed8692a9ff27924752
-	echo "5\n" | ./test_single.sh hanoi.ws.asm.ws 888e3997776c0eed8692a9ff27924752
+	echo "5\n" | ./test_single.sh "" hanoi.ws 888e3997776c0eed8692a9ff27924752
+	echo "5\n" | ./test_single.sh "" hanoi.ws.asm.ws 888e3997776c0eed8692a9ff27924752
 ifeq (@TEST_JIT@,1)
 	echo "5\n" | ./test_single.sh -j hanoi.ws 888e3997776c0eed8692a9ff27924752
 	echo "5\n" | ./test_single.sh -j hanoi.ws.asm.ws 888e3997776c0eed8692a9ff27924752
