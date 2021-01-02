@@ -1,0 +1,20 @@
+
+matrix:
+  fast_finish: true
+  sudo: true
+  include:
+    - language: c
+      script:
+        - ./configure --with-target=debug && sudo make wsi
+    - language: c
+      script:
+        - ./configure --with-target=release && sudo make wsi
+    - language: c
+      script:
+        - ./configure --with-target=release --enable-jit && sudo make wsi
+    - language: c
+      script:
+        - ./configure --with-target=coverage --enable-jit && sudo make wsi test
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
+  cache: apt
