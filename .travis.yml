@@ -22,7 +22,7 @@ matrix:
       script:
         - sudo apt update
         - sudo apt install libtcc-dev
-        - ./configure --with-target=coverage --enable-jit && sudo make wsi test
+        - ./configure --with-target=coverage --enable-jit && sudo make fix-libtcc wsi test
       after_success:
         - bash <(curl -s https://codecov.io/bash)
   cache: apt
