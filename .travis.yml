@@ -14,12 +14,12 @@ matrix:
     - language: c
       dist: focal
       script:
-        - sudo apt install libtcc-dev
+        - sudo apt install libtcc-devel
         - ./configure --with-target=release --enable-jit && sudo make wsi
     - language: c
       dist: focal
       script:
-        - sudo apt install libtcc-dev
+        - sudo apt install libtcc-devel
         - ./configure --with-target=coverage --enable-jit && sudo make wsi test
       after_success:
         - bash <(curl -s https://codecov.io/bash)
