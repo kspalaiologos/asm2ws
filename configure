@@ -630,6 +630,7 @@ LIBOBJS
 MSFLAGS
 LOC_F
 DISTRO
+TEST_JIT
 EGREP
 GREP
 CPP
@@ -3949,6 +3950,8 @@ if test "${enable_jit+set}" = set; then :
   enableval=$enable_jit;
 
 $as_echo "#define JIT /**/" >>confdefs.h
+
+        TEST_JIT="1"
 
 
 fi

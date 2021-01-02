@@ -64,3 +64,5 @@ lex.yy.c
 config.log
 
 config.status
+
+autom4te.cache/
