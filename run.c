@@ -2,7 +2,7 @@
 #include "whitespace.h"
 #include "common.h"
 
-#define GUARD(x, y) if(vector_size(x) < y) fatal("stack underflow");
+#define GUARD(x, y) if(vector_size(x) < ((unsigned) (y))) fatal("stack underflow");
 #define AT(x, y) vector_end(x)[-y]
 #define BILOAD \
     rhs = AT(state->stack, 1); \
@@ -139,6 +139,21 @@ int32_t run(struct parse_result_t program, struct state * state, void(*fatal)(ch
                 struct instruction_t * ret = AT(state->callstack, 1); // addr
                 vector_pop_back(state->callstack);
                 ins = ret;
+                DONE;
+            case SLIDE:
+                GUARD(state->stack, 1);
+                lhs = AT(state->stack, 1);
+                // slide out lhs elements, from the bottom. assert there are enough args.
+                GUARD(state->stack, 1 + lhs);
+                // perform the operation
+                for(rhs = 0; rhs < lhs; rhs++)
+                    vector_erase(state->stack, vector_size(state->stack) - 2);
+                DONE;
+            case COPY:
+                GUARD(state->stack, 1);
+                lhs = AT(state->stack, 1);
+                GUARD(state->stack, 1 + lhs);
+                vector_push_back(state->stack, state->stack[vector_size(state->stack) - 1 - lhs]);
                 DONE;
             }
         }

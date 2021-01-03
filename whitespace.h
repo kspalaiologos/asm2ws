@@ -10,7 +10,10 @@ enum {
     PSH, DUP, XCHG, DROP,
     ADD, SUB, MUL, DIV, MOD, STO, RCL,
     LBL, CALL, JMP, BZ, BLTZ, RET, STOP,
-    ERR
+    ERR,
+
+    // v0.3
+    COPY, SLIDE
 };
 
 struct instruction_t {

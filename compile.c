@@ -193,6 +193,19 @@ char * compile(struct parse_result_t program) {
                     "\tgoto branch;\n"
                 );
                 break;
+            case COPY:
+                emit(
+                    "\tlhs = AT(state->stack, 1);\n"
+                    "\tvector_push_back(state->stack, state->stack[vector_size(state->stack) - 1 - lhs]);\n"
+                );
+                break;
+            case SLIDE:
+                emit(
+                    "\tlhs = AT(state->stack, 1);\n"
+                    "\tfor(rhs = 0; rhs < lhs; rhs++)\n"
+                    "\t\tvector_erase(state->stack, vector_size(state->stack) - 2);\n"
+                );
+                break;
         }
     }
 

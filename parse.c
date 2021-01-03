@@ -3,11 +3,15 @@
 #include <stdint.h>
 #include "common.h"
 
+uint16_t Q;
+
 static int8_t next(FILE * input) {
     char c;
-    while((c = getc(input)) != EOF)
+    while((c = getc(input)) != EOF) {
+        Q++;
         if(c == ' ' || c == '\n' || c == '\t')
             return c;
+    }
     return 0;
 }
 
@@ -84,7 +88,12 @@ static struct instruction_t parse_stack(FILE * input, void (*fatal)(char * s)) {
             case '\n': return (struct instruction_t) { DROP, 0 };
             default: fatal("e, IMP stk"); return (struct instruction_t) { ERR, 0 };
         }
-        default: fatal("<tab>|e, IMP stk"); return (struct instruction_t) { ERR, 0 };
+        case '\t': switch(next(input)) {
+            case ' ': return (struct instruction_t) { COPY, .data = getnum(input) };
+            case '\n': return (struct instruction_t) { SLIDE, .data = getnum(input) };
+            default: fatal("<tab>|e, IMP stk"); return (struct instruction_t) { ERR, 0 };
+        }
+        default: fatal("e, IMP stk"); return (struct instruction_t) { ERR, 0 };
     }
 }
 
