@@ -84,6 +84,21 @@
         }                                        \
     } while (0)
 
+#define vector_insert(vec, idx, n)                             \
+    do {                                                         \
+        if(vec) {                                                \
+            size_t cv_cap = vector_capacity(vec);                \
+            if (cv_cap <= vector_size(vec)) {                    \
+                vector_grow((vec), cv_cap + 32);                 \
+            }                                                    \
+            for(size_t cv = vector_size(vec); cv > idx; cv--) {  \
+                (vec)[cv] = (vec)[cv - 1];                       \
+            }                                                    \
+            (vec)[idx] = n;                                      \
+            _internal_vecsiz((vec), vector_size(vec) + 1);       \
+        }                                                        \
+    } while (0)
+
 #define vector_begin(vec) \
     (vec)
 
