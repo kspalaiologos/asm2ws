@@ -66,7 +66,7 @@
     do {                                                       \
         if (vec) {                                             \
             const size_t cv_sz = vector_size(vec);             \
-            if ((i) < cv_sz) {                                 \
+            if (((uintptr_t) (i)) < cv_sz) {                   \
                 _internal_vecsiz((vec), cv_sz - 1);            \
                 size_t cv_x;                                   \
                 for (cv_x = (i); cv_x < (cv_sz - 1); ++cv_x) { \
