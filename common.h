@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include "whitespace.h"
 
+// after parse calls error(), two behaviors are acceptable:
+// a) terminating the program, so that the control flow never comes back to parse
+// b) allowing the control flow to go to parse, but accepting the fact that the parse result
+//    contains invalid data, which shouldn't be passed into other functions.
 struct parse_result_t parse(FILE * input, void (*error)(char * s), void (*warn)(char * s));
 void disasm(FILE * output, vector(struct instruction_t) program);
 void disasm_single(FILE * output, struct instruction_t * it);

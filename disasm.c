@@ -26,7 +26,6 @@ void disasm_single(FILE * output, struct instruction_t * it) {
         case BLTZ: fprintf(output, "\tJLTZ %%L%d\n", it->data); break;
         case RET: fprintf(output, "\tRET\n"); break;
         case STOP: fprintf(output, "\tEND\n"); break;
-        case ERR: fprintf(output, "\tERROR\n"); break;
         default: fprintf(output, "\t??\n"); break;
     }
 }
