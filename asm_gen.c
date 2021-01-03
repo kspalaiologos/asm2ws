@@ -351,6 +351,12 @@ void asm_gen(FILE * output, vector(struct node_t) data) {
                 case LBL:
                     N;S;S;numeral(output, it->data1.value);
                     break;
+                case COPY:
+                    S;T;S;numeral(output, it->data1.value);
+                    break;
+                case SLIDE:
+                    S;T;N;numeral(output, it->data1.value);
+                    break;
             }
         }
     }

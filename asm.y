@@ -40,7 +40,7 @@
 %type<ins> Construct
 %type<imm> NumericalConstant
 %token I_GETC I_GETN I_PUTC I_PUTN
-%token I_PSH I_DUP I_XCHG I_DROP
+%token I_PSH I_DUP I_XCHG I_DROP I_COPY I_SLIDE
 %token I_ADD I_SUB I_MUL I_DIV I_MOD
 %token I_STO I_RCL
 %token I_CALL I_JMP I_JZ I_JLTZ I_RET I_END
@@ -87,6 +87,8 @@ Construct
 | I_STO { $$ = node(STO, imm_none()); }
 | I_RCL NumericalConstant { $$ = node(RCL, $2); }
 | I_RCL { $$ = node(RCL, imm_none()); }
+| I_COPY NumericalConstant { $$ = node(COPY, $2); }
+| I_SLIDE NumericalConstant { $$ = node(SLIDE, $2); }
 | I_CALL NumericalConstant { $$ = node(CALL, $2); }
 | I_JMP NumericalConstant { $$ = node(JMP, $2); }
 | I_JZ NumericalConstant { $$ = node(BZ, $2); }

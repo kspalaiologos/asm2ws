@@ -37,6 +37,8 @@
 (?i:swap)                   { return I_XCHG; }
 (?i:drop)                   { return I_DROP; }
 (?i:dsc)                    { return I_DROP; }
+(?i:copy)                   { return I_COPY; }
+(?i:slide)                  { return I_SLIDE; }
 
 (?i:add)                    { return I_ADD; }
 (?i:sub)                    { return I_SUB; }
