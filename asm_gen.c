@@ -76,7 +76,10 @@ void dump_labels(struct label_state_t * ctx) {
 
 void finalize_labels(struct label_state_t * ctx) {
     int32_t n = 0;
-    // dump_labels(ctx);
+
+    if(ctx->labels == NULL)
+        return;
+
     qsort(ctx->labels, vector_size(ctx->labels), sizeof(struct _label_t), comparator);
     vector_foreach(struct _label_t, it, ctx->labels) {
         if(!it->declared) {
@@ -91,8 +94,6 @@ void finalize_labels(struct label_state_t * ctx) {
         free(it->name - 1);
     }
 }
-
-/* code emission */
 
 #define S fputc(' ', output)
 #define T fputc('\t', output)
@@ -140,7 +141,10 @@ void asm_gen(FILE * output, vector(struct node_t) data) {
 
         finalize_labels(&s);
 
-        // Pass 2: Generating code.
+        // Pass 2: Optimizing the code.
+        asm_optimize(&data);
+
+        // Pass 3: Generating code.
         vector_foreach(struct node_t, it, data) {
             switch(it->type) {
                 case GETC:
