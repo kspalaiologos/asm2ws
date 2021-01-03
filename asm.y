@@ -56,7 +56,7 @@ Start
 
 MaybeLF
 : %empty
-| LF
+| LF MaybeLF
 ;
 
 ToplevelScope
