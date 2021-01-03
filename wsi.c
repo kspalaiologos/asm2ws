@@ -87,6 +87,7 @@ int main(int argc, char * argv[]) {
             
             if(masm) {
                 asm_file(input);
+                fclose(input);
                 return 0;
             }
 
@@ -103,6 +104,8 @@ int main(int argc, char * argv[]) {
             if(aot) {
                 char * buf = compile(data);
                 printf("%s", buf);
+                vector_free(data.program);
+                vector_free(data.labels);
                 free(buf);
                 return 0;
             }
@@ -110,6 +113,8 @@ int main(int argc, char * argv[]) {
 #ifdef JIT
             if(jit) {
                 run_jit(data, error);
+                vector_free(data.program);
+                vector_free(data.labels);
                 return 0;
             }
 #endif
