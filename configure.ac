@@ -98,24 +98,6 @@ case "$asm2ws_distro_target" in
         ;;
 esac
 
-AC_ARG_WITH([jobs],
-            AS_HELP_STRING([--with-jobs=N],
-                           [Set the amount of make jobs. Must be greater than zero and lesser or equal to 8.]),
-            [asm2ws_jobs=$withval],
-            [asm2ws_jobs=1])
-
-case "$asm2ws_jobs" in
-    1)
-        AC_SUBST([MSFLAGS], [""])
-        ;;
-    2|3|4|5|6|7|8)
-        AC_SUBST([MSFLAGS], ["-j $asm2ws_jobs "])
-        ;;
-    *)
-        AC_MSG_FAILURE([Pass a number in range 1-8 to --with-jobs.])
-        ;;
-esac
-
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_CHECK_FUNCS([printf scanf putchar getchar realloc malloc free fopen fread fprintf perror exit])
