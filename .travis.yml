@@ -1,22 +1,22 @@
 
 language: c
 dist: focal
+os: linux
 matrix:
   fast_finish: true
-  sudo: true
   include:
     - script:
-        - ./configure --with-target=debug && sudo make wsi
+        - ./configure --with-jobs=4 --with-target=debug && sudo make wsi
     - script:
-        - ./configure --with-target=release && sudo make wsi
-    - script:
-        - sudo apt update
-        - sudo apt install libtcc-dev
-        - ./configure --with-target=release --enable-jit && sudo make wsi
+        - ./configure --with-jobs=4 --with-target=release && sudo make wsi
     - script:
         - sudo apt update
         - sudo apt install libtcc-dev
-        - ./configure --with-target=coverage --enable-jit && sudo make fix-libtcc wsi test
+        - ./configure --with-jobs=4 --with-target=release --enable-jit && sudo make wsi
+    - script:
+        - sudo apt update
+        - sudo apt install libtcc-dev
+        - ./configure --with-jobs=4 --with-target=coverage --enable-jit && sudo make fix-libtcc wsi test
       after_success:
         - bash <(curl -s https://codecov.io/bash)
   cache: apt
