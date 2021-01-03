@@ -1,25 +1,19 @@
 
+language: c
+dist: focal
 matrix:
   fast_finish: true
   sudo: true
   include:
-    - language: c
-      dist: focal
-      script:
+    - script:
         - ./configure --with-target=debug && sudo make wsi
-    - language: c
-      dist: focal
-      script:
+    - script:
         - ./configure --with-target=release && sudo make wsi
-    - language: c
-      dist: focal
-      script:
+    - script:
         - sudo apt update
         - sudo apt install libtcc-dev
         - ./configure --with-target=release --enable-jit && sudo make wsi
-    - language: c
-      dist: focal
-      script:
+    - script:
         - sudo apt update
         - sudo apt install libtcc-dev
         - ./configure --with-target=coverage --enable-jit && sudo make fix-libtcc wsi test
