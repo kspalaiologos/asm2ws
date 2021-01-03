@@ -92,7 +92,9 @@ void finalize_labels(struct label_state_t * ctx) {
         ++n;
 
         free(it->name - 1);
+        vector_free(it->references);
     }
+    vector_free(ctx->labels);
 }
 
 #define S fputc(' ', output)
