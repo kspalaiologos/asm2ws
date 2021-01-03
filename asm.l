@@ -73,6 +73,7 @@
 -?[0-9][0-9A-Fa-f]*[hH]     { yylval->string = strdup(yytext); return NUMBER; }
 -?[0-9]+                    { yylval->string = strdup(yytext); return NUMBER; }
 \n+                         { return LF; }
+"/"+                        { return LF; }
 [\t\r\f ]                   { ; }
 .                           { fprintf(stderr, "wsi: unrecognized token at line %d: `%c'", yylineno, *yytext); }
 
