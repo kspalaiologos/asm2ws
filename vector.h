@@ -6,6 +6,7 @@
     typedef unsigned long size_t;
     void * malloc(size_t);
     void * realloc(void *, size_t);
+    void free(void *);
     #define assert(x)
 #else
     #include <stddef.h>

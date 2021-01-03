@@ -128,7 +128,7 @@ char * compile(struct parse_result_t program) {
                 emit("\tBILOAD; vector_push_back(stack, lhs %% rhs);\n");
                 break;
             case STOP:
-                emit("\treturn 0;\n");
+                emit("\tgoto end;\n");
                 break;
             case STO:
                 emit(
@@ -198,6 +198,10 @@ char * compile(struct parse_result_t program) {
 
     emit(
         "\t}\n"
+        "\tend:\n"
+        "\tvector_free(stack);\n"
+        "\tvector_free(heap);\n"
+        "\tvector_free(callstack);\n"
         "}\n"
     );
 
