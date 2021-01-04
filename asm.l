@@ -38,6 +38,8 @@
 (?i:drop)                   { return I_DROP; }
 (?i:dsc)                    { return I_DROP; }
 (?i:copy)                   { return I_COPY; }
+(?i:take)                   { return I_COPY; }
+(?i:pull)                   { return I_COPY; }
 (?i:slide)                  { return I_SLIDE; }
 
 (?i:add)                    { return I_ADD; }
