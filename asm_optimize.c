@@ -13,17 +13,6 @@ void asm_optimize(vector(struct node_t) * data, int optlevel) {
         struct node_t * n = (*data) + idx;
 
         switch(n->type) {
-            case MUL:
-                if(n->data1.type == IMM_VALUE && n->data1.value == 2 && optlevel == 1) {
-                    // MUL 2 => ADD / ADD     ~~ unconditionally saves 2 bytes.
-                    n->data1.type = IMM_NONE;
-                    n->data1.value = 0;
-                    n->type = ADD;
-
-                    INSERT_HERE(0, *n);
-                }
-
-                break;
             case XCHG:
                 if(HAS(1) && n[1].type == XCHG) {
                     // cancel out XCHG / XCHG
