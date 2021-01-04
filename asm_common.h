@@ -22,7 +22,7 @@ struct node_t {
     uint32_t line, column;
 };
 
-void asm_gen(FILE *, vector(struct node_t));
-void asm_optimize(vector(struct node_t) * data);
+void asm_gen(FILE *, vector(struct node_t), int optlevel);
+void asm_optimize(vector(struct node_t) * data, int optlevel);
 
 #endif

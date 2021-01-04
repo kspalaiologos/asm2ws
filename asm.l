@@ -83,11 +83,11 @@
 
 %%
 
-void asm_file(FILE * f) {
+void asm_file(FILE * f, int optlevel) {
     yyscan_t yyscanner;
     
     yylex_init(&yyscanner);
     yyset_in(f, yyscanner);
-    yyparse(yyscanner);
+    yyparse(optlevel, yyscanner);
     yylex_destroy(yyscanner);
 }

@@ -6,13 +6,15 @@
 
 #define HAS(x) ((uintptr_t) (n - vector_begin(*data) - (x)) > vector_size(*data))
 
-void asm_optimize(vector(struct node_t) * data) {
+// optlevel = 1: optimize for size
+// optlevel = 2: optimize for speed
+void asm_optimize(vector(struct node_t) * data, int optlevel) {
     for(uint32_t idx = 0; idx < vector_size(*data); idx++) {
         struct node_t * n = (*data) + idx;
 
         switch(n->type) {
             case MUL:
-                if(n->data1.type == IMM_VALUE && n->data1.value == 2) {
+                if(n->data1.type == IMM_VALUE && n->data1.value == 2 && optlevel == 1) {
                     // MUL 2 => ADD / ADD     ~~ unconditionally saves 2 bytes.
                     n->data1.type = IMM_NONE;
                     n->data1.value = 0;

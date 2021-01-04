@@ -18,7 +18,7 @@ static void warn(char * message) {
 }
 
 int main(int argc, char * argv[]) {
-    int i, dis = 0, count = 0, aot = 0, jit = 0, masm = 0;
+    int i, dis = 0, count = 0, aot = 0, jit = 0, masm = 0, optimize = 0;
     for(i = 1; i < argc; i++) {
         char * arg = argv[i];
         if(*arg == '-') {
@@ -37,6 +37,8 @@ int main(int argc, char * argv[]) {
                     " -j/--jit: enable the JIT compiler.\n"
                     #endif
                     " -m/--masm: run the macro assembler.\n"
+                    " -Os: optimize for size.\n"
+                    " -Of: optimize to produce fast code.\n"
                     "default operation: run whitespace code.\n"
                 );
                 return 1;
@@ -46,6 +48,10 @@ int main(int argc, char * argv[]) {
                 count = 1;
             } else if(!strcmp(arg, "--masm") || arg[1] == 'm') {
                 masm = 1;
+            } else if(!strcmp(arg, "-Os")) {
+                optimize = 1;
+            } else if(!strcmp(arg, "-Of")) {
+                optimize = 2;
             } else if(!strcmp(arg, "--aot") || arg[1] == 'a') {
                 aot = 1;
 #ifdef JIT
@@ -86,7 +92,7 @@ int main(int argc, char * argv[]) {
             }
             
             if(masm) {
-                asm_file(input);
+                asm_file(input, optimize);
                 fclose(input);
                 return 0;
             }

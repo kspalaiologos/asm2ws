@@ -3,6 +3,7 @@
 %define api.token.raw
 %define parse.error verbose
 %locations
+%parse-param { int optlevel }
 %param { yyscan_t scanner }
 
 %code top {
@@ -31,7 +32,7 @@
 
 %code {
     int yylex(YYSTYPE * yylvalp, YYLTYPE * yyllocp, yyscan_t scanner);
-    void yyerror(YYLTYPE * yyllocp, yyscan_t unused, const char * msg);
+    void yyerror(YYLTYPE * yyllocp, int unused_1, yyscan_t unused, const char * msg);
 }
 
 %token END 0 "end of file"
@@ -51,7 +52,7 @@
 %start Start
 %%
 Start
-: MaybeLF ToplevelScope { asm_gen(stdout, $2); }
+: MaybeLF ToplevelScope { asm_gen(stdout, $2, optlevel); }
 ;
 
 MaybeLF
@@ -145,8 +146,9 @@ NumericalConstant
 
 %%
 
-void yyerror(YYLTYPE * yyllocp, yyscan_t unused, const char * msg) {
+void yyerror(YYLTYPE * yyllocp, int unused_1, yyscan_t unused, const char * msg) {
     (void) unused;
+    (void) unused_1;
     fprintf(stderr, "wsi: %d:%d: %s\n", yyllocp->first_line, yyllocp->first_column, msg);
     exit(1);
 }

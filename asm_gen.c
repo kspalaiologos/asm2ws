@@ -113,7 +113,7 @@ void numeral(FILE * output, int32_t x) {
     N;
 }
 
-void asm_gen(FILE * output, vector(struct node_t) data) {
+void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
     if(data) {
         int32_t x;
 
@@ -144,7 +144,7 @@ void asm_gen(FILE * output, vector(struct node_t) data) {
         finalize_labels(&s);
 
         // Pass 2: Optimizing the code.
-        asm_optimize(&data);
+        asm_optimize(&data, optlevel);
 
         // Pass 3: Generating code.
         vector_foreach(struct node_t, it, data) {
