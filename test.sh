@@ -24,14 +24,21 @@ _fail() {
     exit 1
 }
 
+_if_error() {
+    [[ $(wc -c < "$1.err") -ne 0 ]] && _fail $(cat "$1.err")
+    rm -f "$1.err"
+}
+
 _interpreter() {
     _log "$1" "$3"
 
     if [[ -f "$1.in" ]]; then
-        ./wsi $2 "$1" < "$1.in" > "$1.aout"
+        ./wsi $2 "$1" < "$1.in" > "$1.aout" 2> "$1.err"
     else
-        ./wsi $2 "$1" > "$1.aout"
+        ./wsi $2 "$1" > "$1.aout" 2> "$1.err"
     fi
+
+    _if_error "$1"
 
     delta=$(diff "$1.aout" "$1.out")
     status=$?
@@ -46,10 +53,12 @@ _interpreter() {
 _build() {
     _log "$1" "[ASM]"
 
-    ./wsi -m "$1" > "$1.ws"
+    ./wsi -m "$1" > "$1.ws" 2> "$1.err"
     status=$?
 
-    [[ $status -eq 1 ]] && _fail ""
+    [[ $status -eq 1 ]] && _fail $(cat $1.err)
+
+    rm -f "$1.err"
 
     _ok
 }
@@ -57,10 +66,12 @@ _build() {
 _disasm() {
     _log "$1" "[D/C]"
 
-    ./wsi -d "$1" > "$1.asm"
+    ./wsi -d "$1" > "$1.asm" 2> "$1.err"
     status=$?
 
-    [[ $status -eq 1 ]] && _fail ""
+    [[ $status -eq 1 ]] && _fail $(cat $1.err)
+
+    rm -f "$1.err"
 
     _ok
 }
