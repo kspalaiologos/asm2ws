@@ -36,9 +36,7 @@ _interpreter() {
     delta=$(diff "$1.aout" "$1.out")
     status=$?
 
-    if [[ $status -eq 1 ]]; then
-        _fail "$delta"
-    fi
+    [[ $status -eq 1 ]] && _fail "$delta"
 
     _ok
 
@@ -51,9 +49,7 @@ _build() {
     ./wsi -m "$1" > "$1.ws"
     status=$?
 
-    if [[ $status -eq 1 ]]; then
-        _fail ""
-    fi
+    [[ $status -eq 1 ]] && _fail ""
 
     _ok
 }
@@ -64,19 +60,19 @@ _disasm() {
     ./wsi -d "$1" > "$1.asm"
     status=$?
 
-    if [[ $status -eq 1 ]]; then
-        _fail ""
-    fi
+    [[ $status -eq 1 ]] && _fail ""
 
     _ok
 }
 
 _run_jit() {
-    if [[ $TEST_JIT -eq 1 ]]; then
-        _interpreter "$1" "-j" "[JIT]"
-    fi
-
+    [[ $TEST_JIT -eq 1 ]] && _interpreter "$1" "-j" "[JIT]"
     _interpreter "$1" "" "[RUN]"
+}
+
+_build_run() {
+    _build "$1"
+    _run_jit "$1.ws"
 }
 
 test_run_single () {
@@ -84,16 +80,14 @@ test_run_single () {
 }
 
 test_build_run_single() {
-    _build "$1"
-    _run_jit "$1.ws"
+    _build_run "$1"
     rm -f "$1.ws"
 }
 
 test_rebuild_run_single() {
     _run_jit "$1"
     _disasm "$1"
-    _build "$1.asm"
-    _run_jit "$1.asm.ws"
+    _build_run "$1.asm"
     rm -f "$1.asm" "$1.asm.ws"
 }
 
