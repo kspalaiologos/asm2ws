@@ -1,16 +1,16 @@
-#!/bin/bash
+#!/bin/sh
 
 TEST_JIT=0
 
 # TODO: Capture stderr in wsi invocations.
 
-if [[ $# -ne 0 ]]; then
+if [ $# -ne 0 ]; then
     # one argument => test the JIT too.
     TEST_JIT=1
 fi
 
 _log() {
-    echo -n "$(tput setaf 6)$2 $(tput setaf 5)$1$(tput sgr0) $(printf '.%.0s' {1..60})" | head -c 60
+    echo -n "$(tput setaf 6)$2 $(tput setaf 5)$1$(tput sgr0) $(printf '.%.0s' $(seq 1 70))" | head -c 70
     echo -n 
 }
 
@@ -25,14 +25,14 @@ _fail() {
 }
 
 _if_error() {
-    [[ $(wc -c < "$1.err") -ne 0 ]] && _fail $(cat "$1.err")
+    [ $(wc -c < "$1.err") -ne 0 ] && _fail $(cat "$1.err")
     rm -f "$1.err"
 }
 
 _interpreter() {
     _log "$1" "$3"
 
-    if [[ -f "$1.in" ]]; then
+    if [ -f "$1.in" ]; then
         ./wsi $2 "$1" < "$1.in" > "$1.aout" 2> "$1.err"
     else
         ./wsi $2 "$1" > "$1.aout" 2> "$1.err"
@@ -43,7 +43,7 @@ _interpreter() {
     delta=$(diff "$1.aout" "$1.out")
     status=$?
 
-    [[ $status -eq 1 ]] && _fail "$delta"
+    [ $status -eq 1 ] && _fail "$delta"
 
     _ok
 
@@ -56,7 +56,7 @@ _build() {
     ./wsi -m "$1" > "$1.ws" 2> "$1.err"
     status=$?
 
-    [[ $status -eq 1 ]] && _fail $(cat $1.err)
+    [ $status -eq 1 ] && _fail $(cat $1.err)
 
     rm -f "$1.err"
 
@@ -69,7 +69,7 @@ _disasm() {
     ./wsi -d "$1" > "$1.asm" 2> "$1.err"
     status=$?
 
-    [[ $status -eq 1 ]] && _fail $(cat $1.err)
+    [ $status -eq 1 ] && _fail $(cat $1.err)
 
     rm -f "$1.err"
 
@@ -77,7 +77,7 @@ _disasm() {
 }
 
 _run_jit() {
-    [[ $TEST_JIT -eq 1 ]] && _interpreter "$1" "-j" "[JIT]"
+    [ $TEST_JIT -eq 1 ] && _interpreter "$1" "-j" "[JIT]"
     _interpreter "$1" "" "[RUN]"
 }
 
