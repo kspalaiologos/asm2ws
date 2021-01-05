@@ -26,49 +26,27 @@ _if_error() {
 
 _interpreter() {
     _log "$1" "$3"
-
-    if [ -f "$1.in" ]; then
-        ./wsi $2 "$1" < "$1.in" > "$1.aout" 2> "$1.err"
-    else
-        ./wsi $2 "$1" > "$1.aout" 2> "$1.err"
-    fi
-
+    ./wsi $2 "$1" \
+        < $([ -f "$1.in" ] && echo -n "$1.in" || echo -n "/dev/null") \
+        > "$1.aout" 2> "$1.err"
     _if_error "$1"
-
     delta=$(diff "$1.aout" "$1.out")
-    status=$?
-
-    [ $status -eq 1 ] && _fail "$delta"
-
-    _ok
-
-    rm "$1.aout"
+    [ $? -eq 1 ] && _fail "$delta"
+    rm "$1.aout"; _ok
 }
 
 _build() {
     _log "$1" "[ASM]"
-
     ./wsi -m "$1" > "$1.ws" 2> "$1.err"
-    status=$?
-
-    [ $status -eq 1 ] && _fail $(cat $1.err)
-
-    rm -f "$1.err"
-
-    _ok
+    [ $? -eq 1 ] && _fail $(cat $1.err)
+    rm -f "$1.err"; _ok
 }
 
 _disasm() {
     _log "$1" "[D/C]"
-
     ./wsi -d "$1" > "$1.asm" 2> "$1.err"
-    status=$?
-
-    [ $status -eq 1 ] && _fail $(cat $1.err)
-
-    rm -f "$1.err"
-
-    _ok
+    [ $? -eq 1 ] && _fail $(cat $1.err)
+    rm -f "$1.err"; _ok
 }
 
 _run_jit() {
@@ -79,14 +57,6 @@ _run_jit() {
 _build_run() {
     _build "$1"
     _run_jit "$1.ws"
-}
-
-test_run_single () {
-    _run_jit "$1"
-}
-
-test_build_run_single() {
-    _build_run "$1"
     rm -f "$1.ws"
 }
 
@@ -94,9 +64,9 @@ test_rebuild_run_single() {
     _run_jit "$1"
     _disasm "$1"
     _build_run "$1.asm"
-    rm -f "$1.asm" "$1.asm.ws"
+    rm -f "$1.asm"
 }
 
-for f in tests/ws-run/*.ws; do test_run_single "$f"; done
+for f in tests/ws-run/*.ws; do _run_jit "$f"; done
 for f in tests/ws-rebuild/*.ws; do test_rebuild_run_single "$f"; done
-for f in tests/ws-build-run/*.asm; do test_build_run_single "$f"; done
+for f in tests/ws-build-run/*.asm; do _build_run "$f"; done
