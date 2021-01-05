@@ -2,12 +2,7 @@
 
 TEST_JIT=0
 
-# TODO: Capture stderr in wsi invocations.
-
-if [ $# -ne 0 ]; then
-    # one argument => test the JIT too.
-    TEST_JIT=1
-fi
+[ $# -ne 0 ] && TEST_JIT=1
 
 _log() {
     echo -n "$(tput setaf 6)$2 $(tput setaf 5)$1$(tput sgr0) $(printf '.%.0s' $(seq 1 70))" | head -c 70
