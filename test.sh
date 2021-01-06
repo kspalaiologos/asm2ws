@@ -15,7 +15,7 @@ _ok() {
 
 _fail() {
     echo "$(tput setaf 1) [FAIL] $(tput sgr0)"
-    echo -n "$1"
+    echo "$1"
     exit 1
 }
 
@@ -30,6 +30,7 @@ _interpreter() {
         < $([ -f "$1.in" ] && echo -n "$1.in" || echo -n "/dev/null") \
         > "$1.aout" 2> "$1.err"
     _if_error "$1"
+    [ ! -f "$1.out" ] && _fail "$1.out missing"
     delta=$(diff "$1.aout" "$1.out")
     [ $? -eq 1 ] && _fail "$delta"
     rm "$1.aout"; _ok
