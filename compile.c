@@ -195,10 +195,9 @@ char * compile(struct parse_result_t program) {
                 );
                 break;
             case COPY:
-                emit(
-                    "\tlhs = AT(stack, 1);\n"
-                    "\tvector_push_back(stack, stack[vector_size(stack) - 1 - lhs]);\n"
-                );
+                emitf(
+                    "\tvector_push_back(stack, stack[vector_size(stack) - 1 - %d]);\n"
+                , ins->data);
                 break;
             case SLIDE:
                 emitf(

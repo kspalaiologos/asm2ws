@@ -149,10 +149,8 @@ int32_t run(struct parse_result_t program, struct state * state, void(*fatal)(ch
                     vector_erase(state->stack, vector_size(state->stack) - 1);
                 DONE;
             case COPY:
-                GUARD(state->stack, 1, "copy");
-                lhs = AT(state->stack, 1);
-                GUARD(state->stack, 1 + lhs, "copy");
-                vector_push_back(state->stack, state->stack[vector_size(state->stack) - 1 - lhs]);
+                GUARD(state->stack, 1 + ins->data, "copy");
+                vector_push_back(state->stack, state->stack[vector_size(state->stack) - 1 - ins->data]);
                 DONE;
             }
         }
