@@ -4,7 +4,6 @@ TEST_JIT=$#
 
 _log() {
     echo -n "$(tput setaf 6)$2 $(tput setaf 5)$1$(tput sgr0) $(printf '.%.0s' $(seq 1 70))" | head -c 70
-    echo -n 
 }
 
 _ok() {
