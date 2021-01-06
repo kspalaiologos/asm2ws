@@ -35,10 +35,10 @@ case $ans in
         cd "ws-build-run"
 
         _prompt "program" "asm"
-        _prompt "input" "ws.in"
-        _prompt "output" "ws.out"
+        _prompt "input" "asm.ws.in"
+        _prompt "output" "asm.ws.out"
 
-        [ $(wc -c < "$name.in") -eq 0 ] && rm "$name.in"
+        [ $(wc -c < "$name.asm.ws.in") -eq 0 ] && rm "$name.asm.ws.in"
         ;;
     *)
         exit;;

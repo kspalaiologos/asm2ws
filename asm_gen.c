@@ -171,6 +171,15 @@ void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
                     T;N;T;T; // GETN
                     break;
                 case PUTN:
+                    if(it->data2.type != IMM_NONE) {
+                        // REP PUTN X times
+                        rep(it->data1.value) {
+                            T;N;S;T;
+                        }
+                        
+                        break;
+                    }
+
                     if(it->data1.type != IMM_NONE) {
                         S;S;numeral(output, it->data1.value); // PUTN N => PUSH N
                     }
