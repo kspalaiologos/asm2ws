@@ -72,6 +72,7 @@ char * compile(struct parse_result_t program) {
                     "\twhile(vector_size(heap) <= (unsigned) rhs)\n"
                     "\t\tvector_push_back(heap, 0);\n"
                     "\theap[rhs] = getchar();\n"
+                    "\tif(heap[rhs] < 0) heap[rhs] = -1;\n"
                 );
                 break;
             case PUTC:

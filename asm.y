@@ -62,6 +62,7 @@ MaybeLF
 
 ToplevelScope
 : ToplevelScope Construct LF { vector_push_back($1, $2); $$ = $1; }
+| ToplevelScope G_LBL MaybeLF { vector_push_back($1, node(LBL, imm_lbl($2))); $$ = $1; }
 | %empty { $$ = NULL; }
 ;
 
@@ -109,7 +110,6 @@ Construct
 | I_DIV { $$ = node(DIV, imm_none()); }
 | I_MOD { $$ = node(MOD, imm_none()); }
 | I_END { $$ = node(STOP, imm_none()); }
-| G_LBL { $$ = node(LBL, imm_lbl($1)); }
 | NumericalConstant { $$ = node(PSH, $1); }
 ;
 

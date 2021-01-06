@@ -1,0 +1,23 @@
+@S  0 / DUP
+    GETN
+    RCL
+    DUP / BLTZ %O
+    STO 0, 1
+@N  DUP / MOD 2
+    RCL 0 / DUP
+    ADD 1
+    0 / XCHG / STO
+    XCHG / STO
+    DIV 2
+    DUP / JZ %P
+    JMP %N
+@P  0 / DUP
+    RCL / SUB 1
+    REP DUP 2
+    JZ %Q
+    RCL / PUTN
+    STO
+    JMP %P
+@Q  PUTC 10 / JMP %S
+@O  END
+
