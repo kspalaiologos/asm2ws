@@ -1,8 +1,6 @@
 #!/bin/sh
 
-TEST_JIT=0
-
-[ $# -ne 0 ] && TEST_JIT=1
+TEST_JIT=$#
 
 _log() {
     echo -n "$(tput setaf 6)$2 $(tput setaf 5)$1$(tput sgr0) $(printf '.%.0s' $(seq 1 70))" | head -c 70
@@ -51,7 +49,7 @@ _disasm() {
 }
 
 _run_jit() {
-    [ $TEST_JIT -eq 1 ] && _interpreter "$1" "-j" "[JIT]"
+    [ $TEST_JIT -gt 0 ] && _interpreter "$1" "-j" "[JIT]"
     _interpreter "$1" "" "[RUN]"
 }
 
