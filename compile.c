@@ -149,7 +149,7 @@ char * compile(struct parse_result_t program) {
                 );
                 break;
             case LBL:
-                emitf("case %d:\n", ins->data);
+                emitf("case %d:;\n", ins->data);
                 break;
             case JMP:
                 emitf(
