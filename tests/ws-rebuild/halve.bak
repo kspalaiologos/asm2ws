@@ -1,0 +1,4 @@
+GETN 0
+RCL 0
+DIV 2
+PUTN

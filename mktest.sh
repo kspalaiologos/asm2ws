@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 _prompt() {
     echo "$(tput setaf 7)$1:$(tput sgr0) "
@@ -8,7 +8,9 @@ _prompt() {
 printf "$(tput setaf 7)test name:$(tput sgr0) "
 read name
 
-read -n 1 -p "type: (r)ebuild/(b)uild" ans;
+read -n 1 -p "$(tput setaf 7)type: (r)ebuild/(b)uild$(tput sgr0) " ans;
+
+echo ""
 
 cd tests
 
@@ -27,7 +29,7 @@ case $ans in
             && rm "$name.ws.in" \
             && "$name.ws.asm.ws.in"
 
-        ./wsi -m "$name.bak" > "$name.ws"
+        ../../wsi -m "$name.bak" > "$name.ws"
         ;;
     b|B)
         cd "ws-build-run"
