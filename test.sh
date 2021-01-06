@@ -2,23 +2,10 @@
 
 TEST_JIT=$#
 
-_log() {
-    echo -n "$(tput setaf 6)$2 $(tput setaf 5)$1$(tput sgr0) $(printf '.%.0s' $(seq 1 70))" | head -c 70
-}
-
-_ok() {
-    echo "$(tput setaf 2) [OK] $(tput sgr0)"
-}
-
-_fail() {
-    echo "$(tput setaf 1) [FAIL] $(tput sgr0)\n$1"
-    exit 1
-}
-
-_if_error() {
-    [ $(wc -c < "$1.err") -ne 0 ] && _fail $(cat "$1.err")
-    rm -f "$1.err"
-}
+_log() { echo -n "$(tput setaf 6)$2 $(tput setaf 5)$1$(tput sgr0) $(printf '.%.0s' $(seq 1 70))" | head -c 70; }
+_ok() { echo "$(tput setaf 2) [OK] $(tput sgr0)"; }
+_fail() { echo "$(tput setaf 1) [FAIL] $(tput sgr0)\n$1"; exit 1; }
+_if_error() { [ $(wc -c < "$1.err") -ne 0 ] && _fail $(cat "$1.err"); rm -f "$1.err"; }
 
 _interpreter() {
     _log "$1" "$3"
