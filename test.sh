@@ -38,14 +38,14 @@ _interpreter() {
 _build() {
     _log "$1" "[ASM]"
     ./wsi -m "$1" > "$1.ws" 2> "$1.err"
-    [ $? -eq 1 ] && _fail $(cat $1.err)
+    [ $? -eq 1 ] && _fail $(cat "$1.err")
     rm -f "$1.err"; _ok
 }
 
 _disasm() {
     _log "$1" "[D/C]"
     ./wsi -d "$1" > "$1.asm" 2> "$1.err"
-    [ $? -eq 1 ] && _fail $(cat $1.err)
+    [ $? -eq 1 ] && _fail $(cat "$1.err")
     rm -f "$1.err"; _ok
 }
 
