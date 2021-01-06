@@ -27,7 +27,7 @@ case $ans in
 
         [ $(wc -c < "$name.ws.in") -eq 0 ] \
             && rm "$name.ws.in" \
-            && "$name.ws.asm.ws.in"
+            && rm "$name.ws.asm.ws.in"
 
         ../../wsi -m "$name.bak" > "$name.ws"
         ;;

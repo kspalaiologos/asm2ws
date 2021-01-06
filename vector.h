@@ -4,6 +4,7 @@
 
 #ifdef DURING_JIT
     typedef unsigned long size_t;
+    typedef unsigned long uintptr_t;
     void * malloc(size_t);
     void * realloc(void *, size_t);
     void free(void *);

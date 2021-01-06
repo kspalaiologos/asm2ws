@@ -143,13 +143,10 @@ int32_t run(struct parse_result_t program, struct state * state, void(*fatal)(ch
                 ins = ret;
                 DONE;
             case SLIDE:
-                GUARD(state->stack, 1, "slide");
-                lhs = AT(state->stack, 1);
-                // slide out lhs elements, from the bottom. assert there are enough args.
-                GUARD(state->stack, 1 + lhs, "slide");
+                GUARD(state->stack, 1 + ins->data, "slide");
                 // perform the operation
-                for(rhs = 0; rhs < lhs; rhs++)
-                    vector_erase(state->stack, vector_size(state->stack) - 2);
+                for(rhs = 0; rhs < ins->data; rhs++)
+                    vector_erase(state->stack, vector_size(state->stack) - 1);
                 DONE;
             case COPY:
                 GUARD(state->stack, 1, "copy");
