@@ -12,8 +12,7 @@ _ok() {
 }
 
 _fail() {
-    echo "$(tput setaf 1) [FAIL] $(tput sgr0)"
-    echo "$1"
+    echo "$(tput setaf 1) [FAIL] $(tput sgr0)\n$1"
     exit 1
 }
 
@@ -59,7 +58,7 @@ _build_run() {
     rm -f "$1.ws"
 }
 
-test_rebuild_run_single() {
+_rebuild_run_single() {
     _run_jit "$1"
     _disasm "$1"
     _build_run "$1.asm"
@@ -67,5 +66,5 @@ test_rebuild_run_single() {
 }
 
 for f in tests/ws-run/*.ws; do _run_jit "$f"; done
-for f in tests/ws-rebuild/*.ws; do test_rebuild_run_single "$f"; done
+for f in tests/ws-rebuild/*.ws; do _rebuild_run_single "$f"; done
 for f in tests/ws-build-run/*.asm; do _build_run "$f"; done
