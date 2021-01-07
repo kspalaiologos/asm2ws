@@ -75,7 +75,7 @@ void dump_labels(struct label_state_t * ctx) {
 }
 
 void finalize_labels(struct label_state_t * ctx) {
-    int32_t n = 0;
+    uint32_t n = 1;
 
     if(ctx->labels == NULL)
         return;
@@ -90,10 +90,9 @@ void finalize_labels(struct label_state_t * ctx) {
         if(vector_size(it->references) == 1) {
             it->references[0]->data1.type = IMM_LABEL;
         } else {
-            n = -n;
             vector_foreach(struct node_t *, it2, it->references)
                 (*it2)->data1.value = n;
-            if(n<0) --n; else ++n;
+            ++n;
         }
         
         free(it->name - 1);
@@ -110,6 +109,15 @@ void finalize_labels(struct label_state_t * ctx) {
 
 void numeral(FILE * output, int32_t x) {
     if(x < 0) { T; x = -x; } else { S; }
+    uint8_t b[32];
+    int8_t i = 0, j;
+    while(x) { b[i++] = x & 1; x >>= 1; }
+    for(j = i - 1; j >= 0; j--)
+        if(b[j]) T; else S;
+    N;
+}
+
+void unumeral(FILE * output, int32_t x) {
     uint8_t b[32];
     int8_t i = 0, j;
     while(x) { b[i++] = x & 1; x >>= 1; }
@@ -343,16 +351,16 @@ void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
 
                     break;
                 case CALL:
-                    N;S;T;numeral(output, it->data1.value);
+                    N;S;T;unumeral(output, it->data1.value);
                     break;
                 case JMP:
-                    N;S;N;numeral(output, it->data1.value);
+                    N;S;N;unumeral(output, it->data1.value);
                     break;
                 case BZ:
-                    N;T;S;numeral(output, it->data1.value);
+                    N;T;S;unumeral(output, it->data1.value);
                     break;
                 case BLTZ:
-                    N;T;T;numeral(output, it->data1.value);
+                    N;T;T;unumeral(output, it->data1.value);
                     break;
                 case RET:
                     N;T;N;
@@ -366,7 +374,7 @@ void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
                 case LBL:
                     if(it->data1.type == IMM_LABEL)
                         break;
-                    N;S;S;numeral(output, it->data1.value);
+                    N;S;S;unumeral(output, it->data1.value);
                     break;
                 case COPY:
                     S;T;S;numeral(output, it->data1.value);
