@@ -87,9 +87,13 @@ void finalize_labels(struct label_state_t * ctx) {
             exit(1);
         }
 
-        vector_foreach(int32_t *, it2, it->references)
-            **it2 = n;
-        ++n;
+        if(vector_size(it->references) == 1) {
+            *(it->references[0]) = -1;
+        } else {
+            vector_foreach(int32_t *, it2, it->references)
+                **it2 = n;
+            ++n;
+        }
 
         free(it->name - 1);
         vector_free(it->references);
@@ -358,7 +362,10 @@ void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
                     N;N;N;
                     break;
                 case LBL:
-                    N;S;S;numeral(output, it->data1.value);
+                    if(it->data1.value != -1) {
+                        N;S;S;numeral(output, it->data1.value);
+                    }
+                    
                     break;
                 case COPY:
                     S;T;S;numeral(output, it->data1.value);
