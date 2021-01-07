@@ -9,18 +9,24 @@
 // optlevel = 1: optimize for size
 // optlevel = 2: optimize for speed
 void asm_optimize(vector(struct node_t) * data, int optlevel) {
-    for(uint32_t idx = 0; idx < vector_size(*data); idx++) {
-        struct node_t * n = (*data) + idx;
+    uint8_t changed = 1;
+    while(changed) {
+        changed = 0;
 
-        switch(n->type) {
-            case XCHG:
-                if(HAS(1) && n[1].type == XCHG) {
-                    // cancel out XCHG / XCHG
-                    ERASE_HERE(0);
-                    ERASE_HERE(0);
-                }
+        for(uint32_t idx = 0; idx < vector_size(*data); idx++) {
+            struct node_t * n = (*data) + idx;
 
-                break;
+            switch(n->type) {
+                case XCHG:
+                    if(HAS(1) && n[1].type == XCHG) {
+                        // cancel out XCHG / XCHG
+                        ERASE_HERE(0);
+                        ERASE_HERE(0);
+                        changed = 1;
+                    }
+
+                    break;
+            }
         }
     }
 }
