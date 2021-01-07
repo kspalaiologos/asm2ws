@@ -14,7 +14,6 @@ static void error(char * message) {
 
 static void warn(char * message) {
     fprintf(stderr, "wsi: warn: %s\n", message);
-    exit(1);
 }
 
 int main(int argc, char * argv[]) {

@@ -8,7 +8,7 @@
 
 struct _label_t {
     char * name;
-    vector(int32_t *) references;
+    vector(struct node_t *) references;
     uint8_t declared;
 };
 
@@ -23,7 +23,7 @@ struct _label_t * getlabel(struct label_state_t * ctx, char * name) {
     return NULL;
 }
 
-void push_label(struct label_state_t * ctx, char * name, int32_t * id) {
+void push_label(struct label_state_t * ctx, char * name, struct node_t * id) {
     struct _label_t * ref = NULL;
     if((ref = getlabel(ctx, name + 1)) != NULL) {
         if(ref->declared == 1) {
@@ -46,7 +46,7 @@ void push_label(struct label_state_t * ctx, char * name, int32_t * id) {
     vector_push_back(ctx->labels, instance);
 }
 
-void pop_label(struct label_state_t * ctx, char * name, int32_t * id) {
+void pop_label(struct label_state_t * ctx, char * name, struct node_t * id) {
     struct _label_t * ref = NULL;
     if((ref = getlabel(ctx, name + 1)) != NULL) {
         vector_push_back(ref->references, id);
@@ -70,7 +70,7 @@ int comparator(const void * a, const void * b) {
 
 void dump_labels(struct label_state_t * ctx) {
     vector_foreach(struct _label_t, it, ctx->labels) {
-        fprintf(stderr, "%s - present: %d, refs: %lu\n", it->name, it->declared, vector_size(it->references));
+        fprintf(stderr, "%s - refs: %lu\n", it->name, vector_size(it->references));
     }
 }
 
@@ -88,13 +88,14 @@ void finalize_labels(struct label_state_t * ctx) {
         }
 
         if(vector_size(it->references) == 1) {
-            *(it->references[0]) = -1;
+            it->references[0]->data1.type = IMM_LABEL;
         } else {
-            vector_foreach(int32_t *, it2, it->references)
-                **it2 = n;
-            ++n;
+            n = -n;
+            vector_foreach(struct node_t *, it2, it->references)
+                (*it2)->data1.value = n;
+            if(n<0) --n; else ++n;
         }
-
+        
         free(it->name - 1);
         vector_free(it->references);
     }
@@ -125,23 +126,24 @@ void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
         struct label_state_t s = { NULL };
         vector_foreach(struct node_t, it, data) {
             if(it->type == LBL) {
-                push_label(&s, it->data1.label, &it->data1.value);
+                it->data1.type = IMM_VALUE;
+                push_label(&s, it->data1.label, it);
                 continue;
             }
 
             if(it->data1.type == IMM_LABEL) {
                 it->data1.type = IMM_VALUE;
-                pop_label(&s, it->data1.label, &it->data1.value);
+                pop_label(&s, it->data1.label, it);
             }
 
             if(it->data2.type == IMM_LABEL) {
                 it->data2.type = IMM_VALUE;
-                pop_label(&s, it->data2.label, &it->data2.value);
+                pop_label(&s, it->data2.label, it);
             }
 
             if(it->data3.type == IMM_LABEL) {
                 it->data3.type = IMM_VALUE;
-                pop_label(&s, it->data3.label, &it->data3.value);
+                pop_label(&s, it->data3.label, it);
             }
         }
 
@@ -362,10 +364,9 @@ void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
                     N;N;N;
                     break;
                 case LBL:
-                    if(it->data1.value != -1) {
-                        N;S;S;numeral(output, it->data1.value);
-                    }
-                    
+                    if(it->data1.type == IMM_LABEL)
+                        break;
+                    N;S;S;numeral(output, it->data1.value);
                     break;
                 case COPY:
                     S;T;S;numeral(output, it->data1.value);
