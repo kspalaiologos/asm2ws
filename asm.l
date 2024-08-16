@@ -70,7 +70,7 @@
 (?i:end)                    { return I_END; }
 
 ","                         { return COMMA; }
-";"(.*)\n                   { ; }
+";".*                       { ; }
 \'(\\.|[^\\\'\n])\'         { yylval->string = strdup(yytext); return CHAR; }
 \"(\\.|[^\\\"\n])*\"        { yylval->string = strdup(yytext); return STRING; }
 -?[01]+[bB]                 { yylval->string = strdup(yytext); return NUMBER; }
