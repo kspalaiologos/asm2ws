@@ -108,10 +108,11 @@ void finalize_labels(struct label_state_t * ctx) {
 #define rep(bound) for(x = 0; x < bound; x++)
 
 void numeral(FILE * output, int32_t x) {
-    if(x < 0) { T; x = -x; } else { S; }
+    uint32_t u = x;
+    if(x < 0) { T; u = -u; } else { S; }
     uint8_t b[32];
     int8_t i = 0, j;
-    while(x) { b[i++] = x & 1; x >>= 1; }
+    while(u) { b[i++] = u & 1; u >>= 1; }
     for(j = i - 1; j >= 0; j--)
         if(b[j]) T; else S;
     N;
