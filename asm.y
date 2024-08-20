@@ -40,7 +40,7 @@
 %token END 0 "end of file"
 
 %type<ins> Construct
-%type<imm> NumericalConstant
+%type<imm> NumericalConstant Label
 %token I_GETC I_GETN I_PUTC I_PUTN
 %token I_PSH I_DUP I_XCHG I_DROP I_COPY I_SLIDE
 %token I_ADD I_SUB I_MUL I_DIV I_MOD
@@ -108,10 +108,10 @@ Construct
 | I_RCL { $$ = node(RCL, imm_none()); }
 | I_COPY NumericalConstant { $$ = node(COPY, $2); }
 | I_SLIDE NumericalConstant { $$ = node(SLIDE, $2); }
-| I_CALL NumericalConstant { $$ = node(CALL, $2); }
-| I_JMP NumericalConstant { $$ = node(JMP, $2); }
-| I_JZ NumericalConstant { $$ = node(BZ, $2); }
-| I_JLTZ NumericalConstant { $$ = node(BLTZ, $2); }
+| I_CALL Label { $$ = node(CALL, $2); }
+| I_JMP Label { $$ = node(JMP, $2); }
+| I_JZ Label { $$ = node(BZ, $2); }
+| I_JLTZ Label { $$ = node(BLTZ, $2); }
 | I_RET { $$ = node(RET, imm_none()); }
 | I_GETC { $$ = node(GETC, imm_none()); }
 | I_PUTC { $$ = node(PUTC, imm_none()); }
@@ -172,9 +172,10 @@ NumericalConstant
     $$ = imm_val((int32_t) ret);
     free($1);
 }
-| G_REF {
-    $$ = imm_lbl($1);
-}
+;
+
+Label
+: G_REF { $$ = imm_lbl($1); }
 ;
 
 %%
