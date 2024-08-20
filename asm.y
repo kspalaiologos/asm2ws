@@ -17,6 +17,8 @@
     
     #define node(type, param) (struct node_t) { type, param, imm_none(), imm_none(), yyloc.first_line, yyloc.first_column }
     #define node2(type, param1, param2) (struct node_t) { type, param1, param2, imm_none(), yyloc.first_line, yyloc.first_column }
+
+    vector(struct node_t) insn = NULL;
 }
 
 %code requires {
@@ -26,7 +28,6 @@
 %union {
     char * string;
     struct node_t ins;
-    vector(struct node_t) insn;
     struct immediate_t imm;
 }
 
@@ -37,7 +38,6 @@
 
 %token END 0 "end of file"
 
-%type<insn> ToplevelScope
 %type<ins> Construct
 %type<imm> NumericalConstant
 %token I_GETC I_GETN I_PUTC I_PUTN
@@ -45,25 +45,40 @@
 %token I_ADD I_SUB I_MUL I_DIV I_MOD
 %token I_STO I_RCL
 %token I_CALL I_JMP I_JZ I_JLTZ I_RET I_END
-%token I_REP COMMA LF
+%token I_REP COMMA SLASH LF
 
 %token<string> CHAR STRING NUMBER G_LBL G_REF
 
 %start Start
 %%
 Start
-: MaybeLF ToplevelScope { asm_gen(stdout, $2, optlevel); }
+: Lines Line { asm_gen(stdout, insn, optlevel); }
 ;
 
-MaybeLF
-: %empty
-| LF MaybeLF
+Lines
+: Lines Line LF
+| %empty
 ;
 
-ToplevelScope
-: ToplevelScope Construct LF { vector_push_back($1, $2); $$ = $1; }
-| ToplevelScope G_LBL MaybeLF { vector_push_back($1, node(LBL, imm_lbl($2))); $$ = $1; }
-| %empty { $$ = NULL; }
+Line
+: Instructions LastInstruction
+| %empty
+;
+
+Instructions
+: Instructions G_LBL OptionalSLASH { vector_push_back(insn, node(LBL, imm_lbl($2))); }
+| Instructions Construct SLASH { vector_push_back(insn, $2); }
+| %empty
+;
+
+LastInstruction
+: G_LBL { vector_push_back(insn, node(LBL, imm_lbl($1))); }
+| Construct { vector_push_back(insn, $1); }
+;
+
+OptionalSLASH
+: SLASH
+| %empty
 ;
 
 Construct
