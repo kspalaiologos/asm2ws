@@ -157,6 +157,7 @@ NumericalConstant
 
     switch($1[strlen($1) - 1]) {
         case 'h': case 'H': base = 16; break;
+        case 'o': case 'O': base =  8; break;
         case 'b': case 'B': base =  2; break;
     }
 
