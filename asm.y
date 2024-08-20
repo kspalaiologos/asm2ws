@@ -9,6 +9,7 @@
 %code top {
     #include <stdio.h>
     #include <string.h>
+    #include <errno.h>
     #include "asm_common.h"
 
     static struct immediate_t imm_none() { return (struct immediate_t) { .value = 0, IMM_NONE }; }
@@ -148,12 +149,8 @@ NumericalConstant
     free($1);
 }
 | NUMBER {
-    int32_t sign = 1, ret, base = 10;
-    
-    if(*$1 == '-') {
-        sign = -1;
-        $1++;
-    }
+    long ret;
+    int base = 10;
 
     switch($1[strlen($1) - 1]) {
         case 'h': case 'H': base = 16; break;
@@ -161,12 +158,18 @@ NumericalConstant
         case 'b': case 'B': base =  2; break;
     }
 
+    errno = 0;
     ret = strtol($1, NULL, base);
-
-    if(sign == -1)
-        $1--;
+    if(errno) {
+        fprintf(stderr, "wsi: parsing integer %s: %s\n", $1, strerror(errno));
+        exit(1);
+    }
+    if(ret < INT32_MIN || ret > INT32_MAX) {
+        fprintf(stderr, "wsi: integer %s out of range\n", $1);
+        exit(1);
+    }
     
-    $$ = imm_val(ret * sign);
+    $$ = imm_val((int32_t) ret);
     free($1);
 }
 | G_REF {
