@@ -91,6 +91,7 @@ Construct
 | I_REP I_DUP NumericalConstant { $$ = node(DUP, $3); }
 | I_REP I_DROP NumericalConstant { $$ = node(DROP, $3); }
 | I_REP I_ADD NumericalConstant { $$ = node2(ADD, $3, imm_val(1)); }
+| I_REP I_PUTC NumericalConstant { $$ = node2(PUTC, $3, imm_val(1)); }
 | I_REP I_PUTN NumericalConstant { $$ = node2(PUTN, $3, imm_val(1)); }
 | I_REP I_SUB NumericalConstant { $$ = node2(SUB, $3, imm_val(1)); }
 | I_REP I_MUL NumericalConstant { $$ = node2(MUL, $3, imm_val(1)); }
