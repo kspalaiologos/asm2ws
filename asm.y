@@ -131,7 +131,20 @@ Construct
 
 NumericalConstant
 : CHAR {
-    $$ = imm_val($1[1] == '\\' ? $1[2] : $1[1]);
+    char c = $1[1];
+    if(c == '\\') {
+        c = $1[2];
+        switch(c) {
+            case 'a': c = '\a'; break;
+            case 'b': c = '\b'; break;
+            case 'f': c = '\f'; break;
+            case 'n': c = '\n'; break;
+            case 'r': c = '\r'; break;
+            case 't': c = '\t'; break;
+            case 'v': c = '\v'; break;
+        }
+    }
+    $$ = imm_val(c);
     free($1);
 }
 | NUMBER {
