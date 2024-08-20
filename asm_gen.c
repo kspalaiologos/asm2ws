@@ -10,6 +10,7 @@ struct _label_t {
     char * name;
     vector(struct node_t *) references;
     uint8_t declared;
+    uint32_t value;
 };
 
 struct label_state_t {
@@ -42,6 +43,7 @@ void push_label(struct label_state_t * ctx, char * name, struct node_t * id) {
     instance.references = NULL;
     vector_push_back(instance.references, id);
     instance.name = name + 1;
+    instance.value = vector_size(ctx->labels);
 
     vector_push_back(ctx->labels, instance);
 }
@@ -59,13 +61,15 @@ void pop_label(struct label_state_t * ctx, char * name, struct node_t * id) {
     instance.references = NULL;
     vector_push_back(instance.references, id);
     instance.name = name + 1;
+    instance.value = vector_size(ctx->labels);
 
     vector_push_back(ctx->labels, instance);
 }
 
 int comparator(const void * a, const void * b) {
     const struct _label_t * la = a, * lb = b;
-    return vector_size(la->references) - vector_size(lb->references);
+    size_t by_refs = vector_size(lb->references) - vector_size(la->references);
+    return by_refs ? by_refs : la->value - lb->value;
 }
 
 void dump_labels(struct label_state_t * ctx) {
@@ -75,7 +79,7 @@ void dump_labels(struct label_state_t * ctx) {
 }
 
 void finalize_labels(struct label_state_t * ctx) {
-    uint32_t n = 1;
+    uint32_t n = 0;
 
     if(ctx->labels == NULL)
         return;
