@@ -9,6 +9,7 @@
 %code top {
     #include <stdio.h>
     #include <string.h>
+    #include <errno.h>
     #include "asm_common.h"
 
     static struct immediate_t imm_none() { return (struct immediate_t) { .value = 0, IMM_NONE }; }
@@ -17,6 +18,8 @@
     
     #define node(type, param) (struct node_t) { type, param, imm_none(), imm_none(), yyloc.first_line, yyloc.first_column }
     #define node2(type, param1, param2) (struct node_t) { type, param1, param2, imm_none(), yyloc.first_line, yyloc.first_column }
+
+    vector(struct node_t) insn = NULL;
 }
 
 %code requires {
@@ -26,7 +29,6 @@
 %union {
     char * string;
     struct node_t ins;
-    vector(struct node_t) insn;
     struct immediate_t imm;
 }
 
@@ -37,33 +39,47 @@
 
 %token END 0 "end of file"
 
-%type<insn> ToplevelScope
 %type<ins> Construct
-%type<imm> NumericalConstant
+%type<imm> NumericalConstant Label
 %token I_GETC I_GETN I_PUTC I_PUTN
 %token I_PSH I_DUP I_XCHG I_DROP I_COPY I_SLIDE
 %token I_ADD I_SUB I_MUL I_DIV I_MOD
 %token I_STO I_RCL
 %token I_CALL I_JMP I_JZ I_JLTZ I_RET I_END
-%token I_REP COMMA LF
+%token I_REP COMMA SLASH LF
 
 %token<string> CHAR STRING NUMBER G_LBL G_REF
 
 %start Start
 %%
 Start
-: MaybeLF ToplevelScope { asm_gen(stdout, $2, optlevel); }
+: Lines Line { asm_gen(stdout, insn, optlevel); }
 ;
 
-MaybeLF
-: %empty
-| LF MaybeLF
+Lines
+: Lines Line LF
+| %empty
 ;
 
-ToplevelScope
-: ToplevelScope Construct LF { vector_push_back($1, $2); $$ = $1; }
-| ToplevelScope G_LBL MaybeLF { vector_push_back($1, node(LBL, imm_lbl($2))); $$ = $1; }
-| %empty { $$ = NULL; }
+Line
+: Instructions LastInstruction
+| %empty
+;
+
+Instructions
+: Instructions G_LBL OptionalSLASH { vector_push_back(insn, node(LBL, imm_lbl($2))); }
+| Instructions Construct SLASH { vector_push_back(insn, $2); }
+| %empty
+;
+
+LastInstruction
+: G_LBL { vector_push_back(insn, node(LBL, imm_lbl($1))); }
+| Construct { vector_push_back(insn, $1); }
+;
+
+OptionalSLASH
+: SLASH
+| %empty
 ;
 
 Construct
@@ -75,6 +91,7 @@ Construct
 | I_REP I_DUP NumericalConstant { $$ = node(DUP, $3); }
 | I_REP I_DROP NumericalConstant { $$ = node(DROP, $3); }
 | I_REP I_ADD NumericalConstant { $$ = node2(ADD, $3, imm_val(1)); }
+| I_REP I_PUTC NumericalConstant { $$ = node2(PUTC, $3, imm_val(1)); }
 | I_REP I_PUTN NumericalConstant { $$ = node2(PUTN, $3, imm_val(1)); }
 | I_REP I_SUB NumericalConstant { $$ = node2(SUB, $3, imm_val(1)); }
 | I_REP I_MUL NumericalConstant { $$ = node2(MUL, $3, imm_val(1)); }
@@ -92,10 +109,10 @@ Construct
 | I_RCL { $$ = node(RCL, imm_none()); }
 | I_COPY NumericalConstant { $$ = node(COPY, $2); }
 | I_SLIDE NumericalConstant { $$ = node(SLIDE, $2); }
-| I_CALL NumericalConstant { $$ = node(CALL, $2); }
-| I_JMP NumericalConstant { $$ = node(JMP, $2); }
-| I_JZ NumericalConstant { $$ = node(BZ, $2); }
-| I_JLTZ NumericalConstant { $$ = node(BLTZ, $2); }
+| I_CALL Label { $$ = node(CALL, $2); }
+| I_JMP Label { $$ = node(JMP, $2); }
+| I_JZ Label { $$ = node(BZ, $2); }
+| I_JLTZ Label { $$ = node(BLTZ, $2); }
 | I_RET { $$ = node(RET, imm_none()); }
 | I_GETC { $$ = node(GETC, imm_none()); }
 | I_PUTC { $$ = node(PUTC, imm_none()); }
@@ -116,33 +133,50 @@ Construct
 
 NumericalConstant
 : CHAR {
-    $$ = imm_val($1[1] == '\\' ? $1[2] : $1[1]);
+    char c = $1[1];
+    if(c == '\\') {
+        c = $1[2];
+        switch(c) {
+            case 'a': c = '\a'; break;
+            case 'b': c = '\b'; break;
+            case 'f': c = '\f'; break;
+            case 'n': c = '\n'; break;
+            case 'r': c = '\r'; break;
+            case 't': c = '\t'; break;
+            case 'v': c = '\v'; break;
+        }
+    }
+    $$ = imm_val(c);
     free($1);
 }
 | NUMBER {
-    int32_t sign = 1, ret, base = 10;
-    
-    if(*$1 == '-') {
-        sign = -1;
-        $1++;
-    }
+    long ret;
+    int base = 10;
 
     switch($1[strlen($1) - 1]) {
         case 'h': case 'H': base = 16; break;
+        case 'o': case 'O': base =  8; break;
         case 'b': case 'B': base =  2; break;
     }
 
+    errno = 0;
     ret = strtol($1, NULL, base);
-
-    if(sign == -1)
-        $1--;
+    if(errno) {
+        fprintf(stderr, "wsi: parsing integer %s: %s\n", $1, strerror(errno));
+        exit(1);
+    }
+    if(ret < INT32_MIN || ret > INT32_MAX) {
+        fprintf(stderr, "wsi: integer %s out of range\n", $1);
+        exit(1);
+    }
     
-    $$ = imm_val(ret * sign);
+    $$ = imm_val((int32_t) ret);
     free($1);
 }
-| G_REF {
-    $$ = imm_lbl($1);
-}
+;
+
+Label
+: G_REF { $$ = imm_lbl($1); }
 ;
 
 %%

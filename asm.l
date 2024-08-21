@@ -70,14 +70,15 @@
 (?i:end)                    { return I_END; }
 
 ","                         { return COMMA; }
-";"(.*)\n                   { ; }
-\'\\?.\'                    { yylval->string = strdup(yytext); return CHAR; }
-\"(\\.|[^\"])*\"            { yylval->string = strdup(yytext); return STRING; }
+";".*                       { ; }
+\'(\\.|[^\\\'\n])\'         { yylval->string = strdup(yytext); return CHAR; }
+\"(\\.|[^\\\"\n])*\"        { yylval->string = strdup(yytext); return STRING; }
 -?[01]+[bB]                 { yylval->string = strdup(yytext); return NUMBER; }
+-?[0-7]+[oO]                { yylval->string = strdup(yytext); return NUMBER; }
 -?[0-9][0-9A-Fa-f]*[hH]     { yylval->string = strdup(yytext); return NUMBER; }
 -?[0-9]+                    { yylval->string = strdup(yytext); return NUMBER; }
-\n+                         { return LF; }
-"/"+                        { return LF; }
+\n                          { return LF; }
+"/"                         { return SLASH; }
 [\t\r\f ]                   { ; }
 .                           { fprintf(stderr, "wsi: unrecognized token at line %d: `%c'", yylineno, *yytext); }
 

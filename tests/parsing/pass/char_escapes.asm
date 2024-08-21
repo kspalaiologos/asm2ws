@@ -1,0 +1,10 @@
+push '\''
+push '\\'
+push '\a'
+push '\b'
+push '\f'
+push '\n'
+push '\r'
+push '\t'
+push '\v'
+push '\z' ; Something not supported

@@ -10,6 +10,7 @@ struct _label_t {
     char * name;
     vector(struct node_t *) references;
     uint8_t declared;
+    uint32_t value;
 };
 
 struct label_state_t {
@@ -42,6 +43,7 @@ void push_label(struct label_state_t * ctx, char * name, struct node_t * id) {
     instance.references = NULL;
     vector_push_back(instance.references, id);
     instance.name = name + 1;
+    instance.value = vector_size(ctx->labels);
 
     vector_push_back(ctx->labels, instance);
 }
@@ -59,13 +61,15 @@ void pop_label(struct label_state_t * ctx, char * name, struct node_t * id) {
     instance.references = NULL;
     vector_push_back(instance.references, id);
     instance.name = name + 1;
+    instance.value = vector_size(ctx->labels);
 
     vector_push_back(ctx->labels, instance);
 }
 
 int comparator(const void * a, const void * b) {
     const struct _label_t * la = a, * lb = b;
-    return vector_size(la->references) - vector_size(lb->references);
+    size_t by_refs = vector_size(lb->references) - vector_size(la->references);
+    return by_refs ? by_refs : la->value - lb->value;
 }
 
 void dump_labels(struct label_state_t * ctx) {
@@ -75,7 +79,7 @@ void dump_labels(struct label_state_t * ctx) {
 }
 
 void finalize_labels(struct label_state_t * ctx) {
-    uint32_t n = 1;
+    uint32_t n = 0;
 
     if(ctx->labels == NULL)
         return;
@@ -108,10 +112,11 @@ void finalize_labels(struct label_state_t * ctx) {
 #define rep(bound) for(x = 0; x < bound; x++)
 
 void numeral(FILE * output, int32_t x) {
-    if(x < 0) { T; x = -x; } else { S; }
+    uint32_t u = x;
+    if(x < 0) { T; u = -u; } else { S; }
     uint8_t b[32];
     int8_t i = 0, j;
-    while(x) { b[i++] = x & 1; x >>= 1; }
+    while(u) { b[i++] = u & 1; u >>= 1; }
     for(j = i - 1; j >= 0; j--)
         if(b[j]) T; else S;
     N;
@@ -171,6 +176,15 @@ void asm_gen(FILE * output, vector(struct node_t) data, int optlevel) {
                     T;N;T;S; // GETC
                     break;
                 case PUTC:
+                    if(it->data2.type != IMM_NONE) {
+                        // REP PUTC X times
+                        rep(it->data1.value) {
+                            T;N;S;S;
+                        }
+                        
+                        break;
+                    }
+
                     if(it->data1.type != IMM_NONE) {
                         S;S;numeral(output, it->data1.value); // PUTC N => PUSH N
                     }
