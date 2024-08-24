@@ -80,7 +80,7 @@
 \n                          { return LF; }
 "/"                         { return SLASH; }
 [\t\r\f ]                   { ; }
-.                           { fprintf(stderr, "wsi: unrecognized token at line %d: `%c'", yylineno, *yytext); }
+.                           { fprintf(stderr, "wsi: unrecognized token at line %d: `%c'", yylineno, *yytext); exit(1); }
 
 %%
 
