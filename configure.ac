@@ -1,6 +1,6 @@
 
 AC_PREREQ([2.69])
-AC_INIT([asm2ws], [v0.9], [kspalaiologos@gmail.com])
+AC_INIT([asm2ws], [v0.9], [k@iczelia.net])
 AC_CONFIG_SRCDIR([wsi.c])
 AC_CONFIG_HEADERS([config.h])
 AC_COPYRIGHT([Copyright (C) Kamila Szewczyk, 2021. Licensed under the terms of GPLv3 license.])
